@@ -2,8 +2,9 @@
 
 > Local-path shortcuts for the [DeepSeek Harness (DSH)](https://github.com/deepseek-ai) UI:
 > **right-click a Session row** to open its project folder, **right-click a file name in the conversation**
-> to open it, reveal it in the file manager, open it in VS Code, or copy its absolute / relative path, and
-> **right-click an http(s) link** to open it in the default browser or copy it.
+> to open it, reveal it in the file manager, open it in VS Code, or copy its absolute / relative path,
+> **right-click an http(s) link** to open it in the default browser or copy it, and **right-click a workspace
+> row** to open that workspace's directory.
 
 中文说明: [README.md](README.md)
 
@@ -53,6 +54,15 @@ closes it; the menu clamps itself into the viewport.
 | Copy link | Copy the resolved absolute URL |
 
 The link menu shares the file menu's surface, keyboard handling, and dismissal.
+
+### 4. Workspace row → open the workspace folder
+
+**Right-click a workspace row** → **Open in File Explorer**, opening the directory that workspace is registered on.
+
+> The workspace row's `…` menu has no plugin slot on the host side (only the Session menu does), so this
+> action lives on right-click; rename / delete workspace stay on `…`. The directory comes from the
+> root-scope workspace snapshot (mirrored through `useWorkspaces` into an id → directory map), so renames,
+> additions, and deletions are followed automatically.
 
 ---
 

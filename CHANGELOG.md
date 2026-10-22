@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0 — 2026-10-22
+
+- **Right-click a workspace row** → **Open in File Explorer** for that workspace's directory. The workspace
+  row's own `…` menu has no plugin slot, so the action lives on right-click; rename/delete stay on `…`.
+- Workspace paths come from the root workspace snapshot (`useWorkspaces`), mirrored into an id → directory
+  map by a renderless `shell.overlay` entry, so renames/creations/deletions follow live.
+
 ## 1.4.1 — 2026-10-22
 
 - Plugin panel display name changed: **右键增强** / **Right-click Enhancements** (was “打开会话目录与文件右键菜单” /
