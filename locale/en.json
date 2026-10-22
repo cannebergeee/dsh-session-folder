@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Session Folder & File Actions",
+    "description": "Right-click a Session row to open its own menu (including Open in File Explorer), and right-click a file name in the conversation to open, reveal, open in VS Code, or copy its absolute/relative path."
+  }
+}

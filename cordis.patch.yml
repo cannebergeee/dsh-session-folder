@@ -1,0 +1,3 @@
+- insert:
+    - id: session-folder
+      name: '@local/dsh-session-folder'
