@@ -54,6 +54,8 @@ dsh plugin --profile <profile> add github:cannebergeee/dsh-session-folder
 # 3) 重启 DSH
 ```
 
+> 没装 git / 不方便走 GitHub 依赖时，可从 [Releases](https://github.com/cannebergeee/dsh-session-folder/releases) 下载打包好的 `.tgz`，解压到 `<profile>/node_modules/@dsh-external/dsh-session-folder` 后按 B 的第 2、3 步启用。
+
 ### C. 本地开发（不经过 GitHub）
 
 ```bash

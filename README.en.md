@@ -60,6 +60,10 @@ dsh plugin --profile <profile> add github:cannebergeee/dsh-session-folder
 # 3) restart DSH
 ```
 
+> No git, or you'd rather not depend on GitHub? Download the packed `.tgz` from
+> [Releases](https://github.com/cannebergeee/dsh-session-folder/releases), unpack it into
+> `<profile>/node_modules/@dsh-external/dsh-session-folder`, then finish steps 2–3 of B.
+
 ### C. Local development (no GitHub)
 
 ```bash
