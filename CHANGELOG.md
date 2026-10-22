@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.6.0 — 2026-10-22
+
+- **User-message references** now get the same menus: right-clicking an `@file` reference in a user bubble
+  opens the file menu (open / reveal / VS Code / copy paths), and an `@folder` reference opens
+  “Open in File Explorer”. The raw `@path` spelling is recovered from the chip's `title` attribute.
+- Composer references stay untouched: the chip must live inside a rendered chat node.
+- Documented host behavior: user-message text is plain (`UserTextRun`), so typed URLs are not anchors and
+  keep no link menu.
+
 ## 1.5.0 — 2026-10-22
 
 - **Right-click a workspace row** → **Open in File Explorer** for that workspace's directory. The workspace

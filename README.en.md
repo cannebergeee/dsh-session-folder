@@ -55,6 +55,16 @@ closes it; the menu clamps itself into the viewport.
 
 The link menu shares the file menu's surface, keyboard handling, and dismissal.
 
+**User-message references work too**: an `@file` / `@folder` reference in a user bubble (the host's
+`ReferenceChip`, whose `title` keeps the raw `@path` spelling) opens the same menus — the `@` and the
+grammar's quotes are stripped and the path is resolved against the project folder; a folder reference gets
+“Open in File Explorer”. Pending references in the composer are left alone (the chip must be inside a
+rendered chat node).
+
+> Note: user-message text is plain (`UserTextRun` renders `<span>{text}</span>`, no Markdown or link
+> parsing), so a URL typed by the user is not an anchor and has no link menu today. Only Markdown links in
+> assistant messages go through the link menu.
+
 ### 4. Workspace row → open the workspace folder
 
 **Right-click a workspace row** → **Open in File Explorer**, opening the directory that workspace is registered on.

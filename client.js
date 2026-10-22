@@ -61,6 +61,7 @@ window.__ModuleLoader__.load({
       'notice.copiedLink': '已复制链接',
       'notice.openLinkFailed': '无法打开链接，请重试',
       'workspace.title': '工作区操作',
+      'folder.title': '文件夹操作',
     }
     const en = {
       'menu.open': 'Open in File Explorer',
@@ -81,6 +82,7 @@ window.__ModuleLoader__.load({
       'notice.copiedLink': 'Link copied',
       'notice.openLinkFailed': 'Could not open the link. Please try again.',
       'workspace.title': 'Workspace actions',
+      'folder.title': 'Folder actions',
     }
 
     /**
@@ -752,10 +754,37 @@ window.__ModuleLoader__.load({
       }
 
       /**
-       * Open this plugin's file menu for the conversation file chip under the
-       * pointer. Mentions and file links are the primitives' buttons whose
-       * class carries the `fileMention` local name and whose `title` attribute
-       * is the path.
+       * Show the one-row "open this directory" menu at a pointer position.
+       * @param path - absolute directory.
+       * @param x - pointer x.
+       * @param y - pointer y.
+       * @param title - accessible name of the menu.
+       */
+      const showFolderMenu = (path, x, y, title) => {
+        menuStore.set({
+          x,
+          y,
+          title,
+          rows: () => [
+            {
+              key: 'open',
+              label: t('menu.open'),
+              icon: h(FolderIcon, {}),
+              onSelect: () => {
+                void openOnHost({ path })
+              },
+            },
+          ],
+        })
+      }
+
+      /**
+       * Open this plugin's file (or folder) menu for the conversation reference
+       * under the pointer. Two shapes reach here:
+       *  - assistant file mentions and file links, whose `title` is the path;
+       *  - user-message `@file` / `@folder` references, whose `title` is the raw
+       *    spelling (`@path`, possibly quoted) and whose navigation stays in the
+       *    chat bubble.
        * @param target - event target.
        * @param event - the contextmenu event.
        * @returns whether this handler consumed the event.
@@ -763,18 +792,33 @@ window.__ModuleLoader__.load({
       const openFileMenuAt = (target, event) => {
         const button = target.closest('button')
         if (!(button instanceof HTMLButtonElement)) return false
-        // Input-reference chips carry the same `fileMention` class; theirs is a
-        // composer `@name` spelling, not a resolved conversation file.
-        if (button.hasAttribute('data-ref-chip')) return false
         const className = typeof button.className === 'string' ? button.className : ''
         if (!className.includes(FILE_MENTION_CLASS)) return false
-        const raw = button.getAttribute('title')
-        if (typeof raw !== 'string') return false
-        const value = raw.trim()
-        if (value === '' || value.startsWith('@')) return false
-        event.preventDefault()
+        const rawTitle = button.getAttribute('title')
+        if (typeof rawTitle !== 'string') return false
+        const referenceKind = button.getAttribute('data-ref-chip')
+        let value = ''
+        let folder = false
+        if (referenceKind === null) {
+          value = rawTitle.trim()
+          if (value === '' || value.startsWith('@')) return false
+        } else {
+          // Only file and folder references name a path; session, skill, and
+          // command chips carry a label instead. They also belong to the chat
+          // itself, so the composer's pending references stay untouched.
+          if (referenceKind !== 'file' && referenceKind !== 'folder') return false
+          if (button.closest('[data-chat-node-key]') === null) return false
+          value = stripReference(rawTitle, referenceKind === 'folder')
+          if (value === '') return false
+          folder = referenceKind === 'folder'
+        }
         const cwd = currentCwd()
         const absolute = isAbsolutePath(value) || cwd === undefined ? value : joinPath(cwd, value)
+        event.preventDefault()
+        if (folder) {
+          showFolderMenu(absolute, event.clientX, event.clientY, t('folder.title'))
+          return true
+        }
         const relative = isAbsolutePath(value) ? relativeTo(value, cwd) : value.replace(/^\.\//, '').replace(/\\/g, '/')
         menuStore.set({
           x: event.clientX,
@@ -831,21 +875,7 @@ window.__ModuleLoader__.load({
         const path = workspacePathStore.get().get(workspaceId)
         if (typeof path !== 'string' || path === '') return false
         event.preventDefault()
-        menuStore.set({
-          x: event.clientX,
-          y: event.clientY,
-          title: t('workspace.title'),
-          rows: () => [
-            {
-              key: 'open',
-              label: t('menu.open'),
-              icon: h(FolderIcon, {}),
-              onSelect: () => {
-                void openOnHost({ path })
-              },
-            },
-          ],
-        })
+        showFolderMenu(path, event.clientX, event.clientY, t('workspace.title'))
         return true
       }
 
@@ -925,6 +955,22 @@ window.__ModuleLoader__.load({
      */
     function isAbsolutePath(value) {
       return value.startsWith('/') || /^[A-Za-z]:[\\/]/.test(value) || value.startsWith('\\\\')
+    }
+
+    /**
+     * Recover the path from a durable reference's raw spelling, which carries the
+     * `@` prefix and the file-reference grammar's optional quotes.
+     * @param raw - raw token, e.g. `@docs/a.md` or `@"my folder`.
+     * @param folder - whether a trailing slash belongs to the grammar.
+     * @returns the path, or an empty string when the token names nothing.
+     */
+    function stripReference(raw, folder) {
+      let value = raw.trim()
+      if (value.startsWith('@')) value = value.slice(1).trim()
+      if (value.startsWith('"')) value = value.slice(1)
+      if (value.endsWith('"')) value = value.slice(0, -1)
+      if (folder) value = value.replace(/[\\/]+$/, '')
+      return value.trim()
     }
 
     /**
