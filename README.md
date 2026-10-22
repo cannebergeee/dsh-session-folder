@@ -1,7 +1,7 @@
 # dsh-session-folder
 
 > 给 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai) 的界面补上「本地路径」直通车：
-> **右键会话行**打开项目目录，**右键对话里的文件名**打开 / 在资源管理器中定位 / 用 VS Code 打开 / 复制绝对或相对路径，
+> **右键会话行**打开项目目录，**右键对话里的文件名**打开 / 在资源管理器中定位 / 复制绝对或相对路径，
 > **右键对话里的网址**用默认浏览器打开或复制链接，**右键工作区行**打开工作区目录。
 
 English: [README.en.md](README.en.md)
@@ -31,7 +31,6 @@ English: [README.en.md](README.en.md)
 |---|---|
 | 打开 | 用系统默认程序打开该文件 |
 | 资源管理器 | 在资源管理器中定位并选中该文件 |
-| VS Code | 用 VS Code 打开该文件（仅在桌面端确实把 VS Code 注册为该类型处理程序时出现） |
 | ─── | 分隔线 |
 | 复制绝对路径 | 复制文件绝对路径，顶部提示「已复制绝对路径」 |
 | 复制相对路径 | 复制相对项目目录的路径；文件不在项目内时为绝对路径 |
@@ -105,8 +104,7 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-session-folder
 - **会话目录**：浏览器侧 `ctx.sessions.list` 的 `SessionSummary.cwd`（点击时才读，不 retain 会话、不加载历史）。
 - **会话右键**：页面级 `contextmenu` 监听命中会话行的 `data-row-key="session:<id>"` 后，激活该行动作区第一个按钮（即 `…` 触发器）——等价于左键点 `…`，菜单归属、定位、键盘行为都沿用宿主；`rowActions` 自带 `stopPropagation`，因此不会误选中/打开会话。
 - **文件名 → 路径**：对话里的文件 chip 与文件链接由 Chat 原语渲染成 `button.fileMention`，其 `title` 属性就是该文件的路径（宿主 `producedFileMentions` 返回 `{ title: path }`，文件链接同理）；相对路径再按主视图会话的 `cwd` 拼成绝对路径。
-- **打开 / 定位 / VS Code**：全部走宿主 `session.openWorkspacePath` Remote。宿主会先用组合文件系统校验路径，再交给桌面端：默认打开、`action: 'reveal'` 定位，或用 `application` 指定**已注册的**处理程序 id。
-- **VS Code 行**：`session.workspacePathApplications` 查询该文件在本机注册的处理程序（Windows 走 Shell 的 `SHAssocEnumHandlers`），名字或句柄匹配 VS Code 时才显示——没有注册就不显示，不伪造可用性。
+- **打开 / 定位**：全部走宿主 `session.openWorkspacePath` Remote。宿主会先用组合文件系统校验路径，再交给桌面端：默认打开或 `action: 'reveal'` 定位。
 - **复制**：`navigator.clipboard.writeText`。
 - **网址右键**：对话里的 http(s) 链接是普通 `<a href target="_blank">`；「默认浏览器打开」用 `window.open(url, '_blank', 'noopener,noreferrer')`——桌面壳把新窗口一律 deny 并转成 `shell.openExternal`，所以落到系统默认浏览器；纯浏览器部署则是新标签页。
 - **样式**：完全对齐宿主菜单与 toast 的 token（`--dsw-menu-surface-fill` + `--dsw-menu-backdrop-filter` 半透明材质、`--dsw-elevation-prominent`、`--dsw-radius-lg`、`--dsw-alias-menu-icon`、`--dsw-alias-toast-bg`、`--dsw-shadow-lv3` 等），亮/暗主题都跟随；未引入 `dsh-client-ui-primitives`，控件是本插件自己的 `role="menuitem"` 按钮。
@@ -115,14 +113,13 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-session-folder
 
 ## 兼容性
 
-- DSH `0.2.1-rc` 系列（依赖 `sidebar.workspaces.session.menu.item` 槽位与 `session.openWorkspacePath` / `session.workspacePathApplications` Remote）。
+- DSH `0.2.1-rc` 系列（依赖 `sidebar.workspaces.session.menu.item` 槽位与 `session.openWorkspacePath` Remote）。
 - 需要「能把路径交给本机桌面」的部署：DSH Desktop，或本机运行的 Web 版；纯远程/无桌面环境下打开类操作会失败并给出提示。
 - 不占用模型上下文：这是纯浏览器界面插件，不注册工具、不写会话。
 
 ## 已知限制
 
 - **会话右键的菜单位置**沿用宿主菜单的锚点，弹在 `…` 按钮处，而不是鼠标坐标（宿主 `Menu` 只支持 anchor 定位）。
-- **VS Code 行依赖系统文件关联**：Windows 未把 VS Code 注册为该扩展名处理程序时不会出现该行（可在 Windows「打开方式」里关联后再试，关联结果由系统缓存，必要时重启 DSH）。
 - **文件 chip 的路径来源是宿主实现细节**：`title` 属性若在未来 DSH 版本中改变，文件右键会静默失效；会话右键与 `…` 菜单行不受影响。
 - 空白「新会话」行没有 `rowActions`，右键不做任何事。
 

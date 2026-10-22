@@ -2,7 +2,7 @@
 
 > Local-path shortcuts for the [DeepSeek Harness (DSH)](https://github.com/deepseek-ai) UI:
 > **right-click a Session row** to open its project folder, **right-click a file name in the conversation**
-> to open it, reveal it in the file manager, open it in VS Code, or copy its absolute / relative path,
+> to open it, reveal it in the file manager, or copy its absolute / relative path,
 > **right-click an http(s) link** to open it in the default browser or copy it, and **right-click a workspace
 > row** to open that workspace's directory.
 
@@ -36,7 +36,6 @@ link that points at a file):
 |---|---|
 | Open | Open the file with the OS default application |
 | File Explorer | Reveal the file in the file manager (selected) |
-| VS Code | Open the file in VS Code — shown only when the desktop registers VS Code for that file type |
 | ─── | separator |
 | Copy absolute path | Copy the absolute path, with a success notice |
 | Copy relative path | Copy the path relative to the project folder (absolute when outside it) |
@@ -134,11 +133,8 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 - **File name → path**: the chat primitives render file chips and file links as `button.fileMention` whose
   `title` attribute carries the path (the host's `producedFileMentions` returns `{ title: path }`; file links
   do the same). A relative path is joined with the main-view Session's `cwd`.
-- **Open / reveal / VS Code**: all through the host's `session.openWorkspacePath` Remote, which verifies the
-  path through the composed filesystem and then hands it to the desktop — default open, `action: 'reveal'`, or
-  a registered `application` id.
-- **VS Code row**: `session.workspacePathApplications` lists the desktop handlers registered for that file
-  (Shell `SHAssocEnumHandlers` on Windows). The row appears only when VS Code is among them; nothing is faked.
+- **Open / reveal**: all through the host's `session.openWorkspacePath` Remote, which verifies the path
+  through the composed filesystem and then hands it to the desktop — default open or `action: 'reveal'`.
 - **Copy**: `navigator.clipboard.writeText`, with success/failure notices.
 - **Web links**: an http(s) link is a plain `<a href target="_blank">`; “Open in default browser” uses
   `window.open(url, '_blank', 'noopener,noreferrer')` — the desktop shell denies every new window and forwards
@@ -153,7 +149,7 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 ## Compatibility
 
 - DSH `0.2.1-rc` line (needs the `sidebar.workspaces.session.menu.item` slot and the
-  `session.openWorkspacePath` / `session.workspacePathApplications` Remotes).
+  `session.openWorkspacePath` Remote).
 - Requires a deployment that can hand paths to a local desktop (DSH Desktop, or a locally run Web build);
   open actions fail with a notice otherwise.
 - Model-neutral: a browser UI plugin with no tools and no session writes.
@@ -162,9 +158,6 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 
 - **Menu position**: the Session right-click menu keeps the host anchor, so it opens at the `…` button rather
   than at the pointer (the host `Menu` only supports anchor positioning).
-- **VS Code row depends on OS file associations**: without a VS Code handler registered for that extension the
-  row is absent. Associate the type in Windows (Open with → choose VS Code) and retry; the OS caches
-  associations, so a DSH restart may be needed.
 - **The file chip's path source is a host implementation detail**: if a future DSH release stops putting the
   path in `title`, the file right-click goes silent. The Session right-click and the `…` menu row are unaffected.
 - A blank “New session” row has no action seat, so right-clicking it does nothing.

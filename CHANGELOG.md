@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.8.0 — 2026-10-22
+
+- **Removed** the *VS Code* row from the file menu: the menu is now exactly **打开 / 资源管理器 /
+  复制绝对路径 / 复制相对路径** (Open / File Explorer / Copy absolute path / Copy relative path).
+- Dropped the whole desktop file-association path with it: `session.workspacePathApplications`, its per-path
+  cache, the editor glyph, and the asynchronous row insertion — so the menu is a single synchronous render.
+
 ## 1.7.2 — 2026-10-22
 
 - **Copy link** now uses the same copy glyph as *Copy absolute path* / *Copy relative path* (two overlapping

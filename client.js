@@ -7,8 +7,7 @@
  *    that opens that Session's project folder in the local file manager.
  *    Right-clicking a Session row opens that same "..." menu at the row.
  * 2. **Right-click on a file name in the conversation** — a menu with open,
- *    reveal in the file manager, open in the associated editor (VS Code when
- *    the desktop registers it), and copy absolute / relative path.
+ *    reveal in the file manager, and copy absolute / relative path.
  *
  * Paths: the Session row's folder comes from `SessionListState.byId[id].cwd`.
  * A conversation file chip carries its path in the `title` attribute (the chat
@@ -16,10 +15,8 @@
  * and the Session cwd that path is relative to comes from the main-view
  * Session. Nothing here retains a Session or loads history.
  *
- * Operations use the shipped `session.*` Remotes: `openWorkspacePath` verifies
- * the path through the composed filesystem before opening or revealing it, and
- * `workspacePathApplications` lists the desktop's registered handlers for one
- * file, whose ids are the values `openWorkspacePath({ application })` accepts.
+ * Operations use the shipped `session.openWorkspacePath` Remote, which verifies
+ * the path through the composed filesystem before opening or revealing it.
  *
  * Everything here is browser chrome: the Host half is an empty `apply`.
  */
@@ -39,8 +36,6 @@ window.__ModuleLoader__.load({
     const SESSION_ROW_PREFIX = 'session:'
     /** `data-row-key` prefix the workspace browser gives one workspace row. */
     const WORKSPACE_ROW_PREFIX = 'workspace:'
-    /** Display names and handler names that mean the VS Code editor. */
-    const EDITOR_PATTERN = /visual studio code|vs ?code|vscode|code\.exe/i
 
     const zh = {
       'menu.open': '在资源管理器中打开',
@@ -133,7 +128,7 @@ window.__ModuleLoader__.load({
       }
     }
 
-    /** Right-click menu request: `{ x, y, title, rows(editor), loadEditor? }`. */
+    /** Right-click menu request: `{ x, y, title, rows() }`. */
     const menuStore = createStore(null)
     /** Workspace id → directory, mirrored from the root workspace snapshot. */
     const workspacePathStore = createStore(new Map())
@@ -201,20 +196,6 @@ window.__ModuleLoader__.load({
         h('path', { key: 'box', d: 'M9.4 2.6h4v4' }),
         h('path', { key: 'arrow', d: 'M13.4 2.6 8.2 7.8' }),
         h('path', { key: 'frame', d: 'M12.4 9.9v2.4c0 .6-.5 1.1-1.1 1.1H3.8c-.6 0-1.1-.5-1.1-1.1V5c0-.6.5-1.1 1.1-1.1h2.5' }),
-      )
-    }
-
-    /**
-     * Code-editor glyph, used when the desktop reports no icon for the handler.
-     * @returns the icon.
-     */
-    function CodeIcon() {
-      return h(
-        Icon,
-        {},
-        h('path', { key: 'left', d: 'M5.4 5.2 2.6 8l2.8 2.8' }),
-        h('path', { key: 'right', d: 'M10.6 5.2 13.4 8l-2.8 2.8' }),
-        h('path', { key: 'slash', d: 'M9.2 3.4 6.8 12.6' }),
       )
     }
 
@@ -292,33 +273,15 @@ window.__ModuleLoader__.load({
 
     /**
      * The right-click menu surface: the request supplies its own rows, so the
-     * file menu and the link menu share one surface. A request with
-     * `loadEditor` resolves one extra row asynchronously; the menu re-clamps
-     * when it arrives so the row never pushes itself off screen.
+     * file menu, the folder menu, and the link menu share one surface.
      * @returns the positioned menu, or null while closed.
      */
     function ContextMenu() {
       const request = useStore(menuStore)
       const ref = React.useRef(null)
-      const [editor, setEditor] = React.useState(null)
-
-      React.useEffect(() => {
-        setEditor(null)
-        if (request === null || typeof request.loadEditor !== 'function') return undefined
-        let cancelled = false
-        request.loadEditor().then(
-          (next) => {
-            if (!cancelled) setEditor(next === null ? null : next)
-          },
-          () => {},
-        )
-        return () => {
-          cancelled = true
-        }
-      }, [request])
 
       /**
-       * Keep the menu inside the viewport after any row-set change.
+       * Keep the menu inside the viewport.
        * @param x - preferred left edge.
        * @param y - preferred top edge.
        */
@@ -333,8 +296,7 @@ window.__ModuleLoader__.load({
         el.style.top = String(top) + 'px'
       }
 
-      // A new request places and focuses the menu; an extra editor row only
-      // re-clamps it, so the keyboard focus the user already moved stays put.
+      // A new request places the menu and focuses its first row.
       React.useLayoutEffect(() => {
         if (request === null) return undefined
         clamp(request.x, request.y)
@@ -342,12 +304,6 @@ window.__ModuleLoader__.load({
         if (first instanceof HTMLElement) first.focus()
         return undefined
       }, [request])
-
-      React.useLayoutEffect(() => {
-        if (request === null) return undefined
-        clamp(request.x, request.y)
-        return undefined
-      }, [editor])
 
       React.useEffect(() => {
         if (request === null) return undefined
@@ -398,7 +354,7 @@ window.__ModuleLoader__.load({
         action()
       }
       const rows = []
-      for (const spec of request.rows(editor)) {
+      for (const spec of request.rows()) {
         if (spec.separator === true) {
           rows.push(h('div', { key: spec.key, className: 'dsf-menu-sep', role: 'separator' }))
           continue
@@ -590,14 +546,12 @@ window.__ModuleLoader__.load({
       }
 
       /**
-       * Rows of the file menu: open / reveal / editor, then the two copies.
-       * The editor row is added only once the desktop answered which handlers
-       * this file has, so the menu never offers an application it cannot launch.
+       * Rows of the file menu: open / reveal, then the two copies.
        * @param absolute - absolute file path.
        * @param relative - path relative to the project folder.
-       * @returns a row builder the menu calls with the resolved editor.
+       * @returns a row builder for the shared menu.
        */
-      const fileMenuRows = (absolute, relative) => (editor) => {
+      const fileMenuRows = (absolute, relative) => () => {
         const rows = [
           {
             key: 'open',
@@ -616,19 +570,6 @@ window.__ModuleLoader__.load({
             },
           },
         ]
-        if (editor !== null && editor !== undefined) {
-          rows.push({
-            key: 'editor',
-            label: editor.name,
-            icon:
-              typeof editor.icon === 'string'
-                ? h('img', { src: editor.icon, alt: '', draggable: false })
-                : h(CodeIcon, {}),
-            onSelect: () => {
-              void openOnHost({ path: absolute, application: editor.id })
-            },
-          })
-        }
         rows.push({ key: 'sep', separator: true })
         rows.push(
           {
@@ -693,50 +634,6 @@ window.__ModuleLoader__.load({
         }
         if (main !== undefined) return main.cwd
         return fallback === undefined ? undefined : fallback.cwd
-      }
-
-      /**
-       * List the desktop handlers registered for one file.
-       * @param path - absolute path on the Host.
-       * @returns the handlers, or null when the query failed.
-       */
-      const fileApplications = async (path) => {
-        try {
-          const result = await ctx.remote.session.workspacePathApplications({ path })
-          if (result !== undefined && result !== null && result.ok === true && Array.isArray(result.value)) return result.value
-          return null
-        } catch (error) {
-          console.warn('session folder: application query rejected', error)
-          return null
-        }
-      }
-
-      /** Per-path answer cache: the desktop query spawns a PowerShell read. */
-      const editorCache = new Map()
-
-      /**
-       * Pick the VS Code handler out of this file's registered handlers.
-       * Only a successful query is cached, so a failed one retries next time.
-       * @param path - absolute path on the Host.
-       * @returns the handler, or null when this desktop has none.
-       */
-      const loadEditor = async (path) => {
-        const cached = editorCache.get(path)
-        if (cached !== undefined) return cached
-        const apps = await fileApplications(path)
-        if (apps === null) return null
-        let editor = null
-        for (const app of apps) {
-          const name = typeof app.name === 'string' ? app.name : ''
-          const id = typeof app.id === 'string' ? app.id : ''
-          if (EDITOR_PATTERN.test(name) || EDITOR_PATTERN.test(id)) {
-            editor = app
-            break
-          }
-        }
-        if (editorCache.size >= 32) editorCache.clear()
-        editorCache.set(path, editor)
-        return editor
       }
 
       /**
@@ -824,7 +721,6 @@ window.__ModuleLoader__.load({
           y: event.clientY,
           title: t('file.title'),
           rows: fileMenuRows(absolute, relative),
-          loadEditor: () => loadEditor(absolute),
         })
         return true
       }
