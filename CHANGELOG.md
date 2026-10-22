@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.7.2 — 2026-10-22
+
+- **Copy link** now uses the same copy glyph as *Copy absolute path* / *Copy relative path* (two overlapping
+  rounded rectangles). The previous chain glyph collapsed into an “S” at the menu's 14 px icon size.
+
 ## 1.7.1 — 2026-10-22
 
 - **Fix**: the image-link menu opened the wrong paths, because v1.7.0 guessed the target from the visible

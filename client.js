@@ -246,20 +246,6 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * Chain glyph for "copy link".
-     * @returns the icon.
-     */
-    function LinkIcon() {
-      return h(
-        Icon,
-        {},
-        h('path', { key: 'left', d: 'M6.9 9.1 5.5 10.5a2.3 2.3 0 0 1-3.2-3.2l1.4-1.4' }),
-        h('path', { key: 'right', d: 'M9.1 6.9l1.4-1.4a2.3 2.3 0 0 1 3.2 3.2l-1.4 1.4' }),
-        h('path', { key: 'bar', d: 'M6.2 9.8 9.8 6.2' }),
-      )
-    }
-
-    /**
      * One `role="menuitem"` row, matching the host menu row metrics.
      * @param props.label - visible text.
      * @param props.icon - leading icon.
@@ -682,7 +668,7 @@ window.__ModuleLoader__.load({
         {
           key: 'copy',
           label: t('url.copy'),
-          icon: h(LinkIcon, {}),
+          icon: h(CopyIcon, {}),
           onSelect: () => {
             void copyText(url, t('notice.copiedLink'))
           },
