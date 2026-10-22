@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.1 — 2026-10-22
+
+- **Fix**: `cordis.patch.yml` still inserted the row under the pre-rename package name
+  (`@local/dsh-session-folder`), so the Loader row resolved to a package that no longer existed and the
+  plugin silently did not load. The patch now names `@dsh-external/dsh-session-folder`, matching
+  `package.json` and the Client bundle id. v1.3.0 is superseded.
+
 ## 1.3.0 — 2026-10-22
 
 - **Right-click a Session row** now opens that row's own `…` menu (same host menu, one extra trigger).
