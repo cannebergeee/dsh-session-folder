@@ -795,14 +795,22 @@ window.__ModuleLoader__.load({
         const className = typeof button.className === 'string' ? button.className : ''
         if (!className.includes(FILE_MENTION_CLASS)) return false
         const rawTitle = button.getAttribute('title')
-        if (typeof rawTitle !== 'string') return false
         const referenceKind = button.getAttribute('data-ref-chip')
         let value = ''
         let folder = false
         if (referenceKind === null) {
-          value = rawTitle.trim()
+          if (typeof rawTitle === 'string' && rawTitle.trim() !== '') {
+            value = rawTitle.trim()
+          } else {
+            // An image link drops `title` once the chat can preview it, so fall
+            // back to the visible label when that label names a file. The path
+            // itself never reaches the DOM in that case.
+            value = (button.textContent === null ? '' : button.textContent).trim()
+            if (!looksLikeFilePath(value)) return false
+          }
           if (value === '' || value.startsWith('@')) return false
         } else {
+          if (typeof rawTitle !== 'string') return false
           // Only file and folder references name a path; session, skill, and
           // command chips carry a label instead. They also belong to the chat
           // itself, so the composer's pending references stay untouched.
@@ -955,6 +963,18 @@ window.__ModuleLoader__.load({
      */
     function isAbsolutePath(value) {
       return value.startsWith('/') || /^[A-Za-z]:[\\/]/.test(value) || value.startsWith('\\\\')
+    }
+
+    /**
+     * Whether a link label plausibly names a file, which is all the DOM offers
+     * for an image link whose preview replaced the `title` attribute.
+     * @param value - visible label.
+     * @returns true when the label can be treated as a path.
+     */
+    function looksLikeFilePath(value) {
+      if (value === '' || value.length > 260) return false
+      if (/\s/.test(value)) return false
+      return /\.[A-Za-z0-9]{1,10}$/.test(value)
     }
 
     /**

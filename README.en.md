@@ -65,6 +65,12 @@ rendered chat node).
 > parsing), so a URL typed by the user is not an anchor and has no link menu today. Only Markdown links in
 > assistant messages go through the link menu.
 
+**Image links (`.png` and friends) work too**: the host drops `title` from a Markdown link that points at an
+image so it can show the inline preview, leaving only the link text in the DOM. Such a link is therefore
+resolved from its **visible label** — only when that label looks like a file name (has an extension, no
+whitespace) — against the project folder. `[castle_launch1.png](castle_launch1.png)` works; a label that does
+not match the real path fails with a notice.
+
 ### 4. Workspace row → open the workspace folder
 
 **Right-click a workspace row** → **Open in File Explorer**, opening the directory that workspace is registered on.

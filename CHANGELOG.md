@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.0 — 2026-10-22
+
+- **Image links** (Markdown links to `.png` and other image files) now get the file menu. The host removes
+  `title` from such a link once its inline preview resolves, so the path is recovered from the **visible
+  label** when that label looks like a file name, then resolved against the project folder.
+- Links whose label is prose (not a file name) keep the browser menu; opening a guessed path that does not
+  exist reports the usual failure notice.
+
 ## 1.6.0 — 2026-10-22
 
 - **User-message references** now get the same menus: right-clicking an `@file` reference in a user bubble
