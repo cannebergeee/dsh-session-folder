@@ -5,6 +5,9 @@
 
 English: [README.en.md](README.en.md)
 
+> 已在 DeepSeek Harness 官方仓库的 **Show Your Plugins!** 讨论区发布：
+> <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
+
 ---
 
 ## 功能

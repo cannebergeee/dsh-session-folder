@@ -6,6 +6,9 @@
 
 中文说明: [README.md](README.md)
 
+> Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
+> <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
+
 ---
 
 ## What you get
