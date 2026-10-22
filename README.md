@@ -1,7 +1,8 @@
 # dsh-session-folder
 
 > 给 [DeepSeek Harness (DSH)](https://github.com/deepseek-ai) 的界面补上「本地路径」直通车：
-> **右键会话行**打开项目目录，**右键对话里的文件名**打开 / 在资源管理器中定位 / 用 VS Code 打开 / 复制绝对或相对路径。
+> **右键会话行**打开项目目录，**右键对话里的文件名**打开 / 在资源管理器中定位 / 用 VS Code 打开 / 复制绝对或相对路径，
+> **右键对话里的网址**用默认浏览器打开或复制链接。
 
 English: [README.en.md](README.en.md)
 
@@ -34,6 +35,17 @@ English: [README.en.md](README.en.md)
 | 复制相对路径 | 复制相对项目目录的路径；文件不在项目内时为绝对路径 |
 
 键盘可用：`↑`/`↓` 移动、`Enter`/`Space` 执行、`Esc` 关闭；点外部、滚动、窗口失焦都会收起；菜单自动避让视口边缘。
+
+### 3. 对话里的网址：右键菜单
+
+**右键对话里的 http(s) 链接**（Markdown 链接）：
+
+| 菜单行 | 行为 |
+|---|---|
+| 默认浏览器打开 | 交给桌面端的系统浏览器打开（`window.open` → 桌面壳的 window-open 策略 `shell.openExternal`） |
+| 复制链接 | 复制解析后的绝对 URL |
+
+菜单行的样式、键盘与关闭行为与文件菜单完全一致。
 
 ---
 
@@ -82,6 +94,7 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-session-folder
 - **打开 / 定位 / VS Code**：全部走宿主 `session.openWorkspacePath` Remote。宿主会先用组合文件系统校验路径，再交给桌面端：默认打开、`action: 'reveal'` 定位，或用 `application` 指定**已注册的**处理程序 id。
 - **VS Code 行**：`session.workspacePathApplications` 查询该文件在本机注册的处理程序（Windows 走 Shell 的 `SHAssocEnumHandlers`），名字或句柄匹配 VS Code 时才显示——没有注册就不显示，不伪造可用性。
 - **复制**：`navigator.clipboard.writeText`。
+- **网址右键**：对话里的 http(s) 链接是普通 `<a href target="_blank">`；「默认浏览器打开」用 `window.open(url, '_blank', 'noopener,noreferrer')`——桌面壳把新窗口一律 deny 并转成 `shell.openExternal`，所以落到系统默认浏览器；纯浏览器部署则是新标签页。
 - **样式**：完全对齐宿主菜单与 toast 的 token（`--dsw-menu-surface-fill` + `--dsw-menu-backdrop-filter` 半透明材质、`--dsw-elevation-prominent`、`--dsw-radius-lg`、`--dsw-alias-menu-icon`、`--dsw-alias-toast-bg`、`--dsw-shadow-lv3` 等），亮/暗主题都跟随；未引入 `dsh-client-ui-primitives`，控件是本插件自己的 `role="menuitem"` 按钮。
 
 ---

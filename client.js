@@ -53,6 +53,11 @@ window.__ModuleLoader__.load({
       'notice.copiedRelative': '已复制相对路径',
       'notice.copyFailed': '复制失败，请重试',
       'notice.noPath': '无法确定该文件的路径',
+      'url.title': '链接操作',
+      'url.open': '默认浏览器打开',
+      'url.copy': '复制链接',
+      'notice.copiedLink': '已复制链接',
+      'notice.openLinkFailed': '无法打开链接，请重试',
     }
     const en = {
       'menu.open': 'Open in File Explorer',
@@ -67,6 +72,11 @@ window.__ModuleLoader__.load({
       'notice.copiedRelative': 'Relative path copied',
       'notice.copyFailed': 'Could not copy. Please try again.',
       'notice.noPath': 'Could not resolve this file path',
+      'url.title': 'Link actions',
+      'url.open': 'Open in default browser',
+      'url.copy': 'Copy link',
+      'notice.copiedLink': 'Link copied',
+      'notice.openLinkFailed': 'Could not open the link. Please try again.',
     }
 
     /**
@@ -117,8 +127,8 @@ window.__ModuleLoader__.load({
       }
     }
 
-    /** Right-click menu request for one file: `{ x, y, labels, actions... }`. */
-    const fileMenuStore = createStore(null)
+    /** Right-click menu request: `{ x, y, title, rows(editor), loadEditor? }`. */
+    const menuStore = createStore(null)
     /** Transient notice: `{ seq, text, tone }`. */
     const noticeStore = createStore(null)
 
@@ -214,6 +224,34 @@ window.__ModuleLoader__.load({
     }
 
     /**
+     * Globe glyph for "open in the default browser".
+     * @returns the icon.
+     */
+    function GlobeIcon() {
+      return h(
+        Icon,
+        {},
+        h('circle', { key: 'globe', cx: 8, cy: 8, r: 5.6 }),
+        h('path', { key: 'equator', d: 'M2.6 8h10.8' }),
+        h('path', { key: 'meridian', d: 'M8 2.4c1.5 1.6 2.3 3.5 2.3 5.6S9.5 12 8 13.6C6.5 12 5.7 10.1 5.7 8S6.5 4 8 2.4Z' }),
+      )
+    }
+
+    /**
+     * Chain glyph for "copy link".
+     * @returns the icon.
+     */
+    function LinkIcon() {
+      return h(
+        Icon,
+        {},
+        h('path', { key: 'left', d: 'M6.9 9.1 5.5 10.5a2.3 2.3 0 0 1-3.2-3.2l1.4-1.4' }),
+        h('path', { key: 'right', d: 'M9.1 6.9l1.4-1.4a2.3 2.3 0 0 1 3.2 3.2l-1.4 1.4' }),
+        h('path', { key: 'bar', d: 'M6.2 9.8 9.8 6.2' }),
+      )
+    }
+
+    /**
      * One `role="menuitem"` row, matching the host menu row metrics.
      * @param props.label - visible text.
      * @param props.icon - leading icon.
@@ -259,19 +297,20 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * The right-click file menu: rows at the pointer, keyboard-dismissable.
-     * The editor row appears once the desktop answers which handlers this file
-     * has, so the menu never offers an application the Host cannot launch.
+     * The right-click menu surface: the request supplies its own rows, so the
+     * file menu and the link menu share one surface. A request with
+     * `loadEditor` resolves one extra row asynchronously; the menu re-clamps
+     * when it arrives so the row never pushes itself off screen.
      * @returns the positioned menu, or null while closed.
      */
-    function FileContextMenu() {
-      const request = useStore(fileMenuStore)
+    function ContextMenu() {
+      const request = useStore(menuStore)
       const ref = React.useRef(null)
       const [editor, setEditor] = React.useState(null)
 
       React.useEffect(() => {
         setEditor(null)
-        if (request === null) return undefined
+        if (request === null || typeof request.loadEditor !== 'function') return undefined
         let cancelled = false
         request.loadEditor().then(
           (next) => {
@@ -318,7 +357,7 @@ window.__ModuleLoader__.load({
 
       React.useEffect(() => {
         if (request === null) return undefined
-        const close = () => fileMenuStore.set(null)
+        const close = () => menuStore.set(null)
         const onPointerDown = (event) => {
           const el = ref.current
           if (el !== null && event.target instanceof Node && el.contains(event.target)) return
@@ -360,65 +399,33 @@ window.__ModuleLoader__.load({
       }, [request])
 
       if (request === null) return null
-      const labels = request.labels
       const run = (action) => {
-        fileMenuStore.set(null)
+        menuStore.set(null)
         action()
       }
-      const rows = [
-        h(MenuItem, {
-          key: 'open',
-          label: labels.open,
-          icon: h(OpenIcon, {}),
-          tabIndex: -1,
-          onSelect: () => run(request.open),
-        }),
-        h(MenuItem, {
-          key: 'reveal',
-          label: labels.reveal,
-          icon: h(FolderIcon, {}),
-          tabIndex: -1,
-          onSelect: () => run(request.reveal),
-        }),
-      ]
-      if (editor !== null) {
+      const rows = []
+      for (const spec of request.rows(editor)) {
+        if (spec.separator === true) {
+          rows.push(h('div', { key: spec.key, className: 'dsf-menu-sep', role: 'separator' }))
+          continue
+        }
         rows.push(
           h(MenuItem, {
-            key: 'editor',
-            label: editor.name,
+            key: spec.key,
+            label: spec.label,
+            icon: spec.icon,
             tabIndex: -1,
-            icon:
-              typeof editor.icon === 'string'
-                ? h('img', { src: editor.icon, alt: '', draggable: false })
-                : h(CodeIcon, {}),
-            onSelect: () => run(() => request.openWith(editor.id)),
+            onSelect: () => run(spec.onSelect),
           }),
         )
       }
-      rows.push(h('div', { key: 'sep', className: 'dsf-menu-sep', role: 'separator' }))
-      rows.push(
-        h(MenuItem, {
-          key: 'abs',
-          label: labels.copyAbsolute,
-          icon: h(CopyIcon, {}),
-          tabIndex: -1,
-          onSelect: () => run(request.copyAbsolute),
-        }),
-        h(MenuItem, {
-          key: 'rel',
-          label: labels.copyRelative,
-          icon: h(CopyIcon, {}),
-          tabIndex: -1,
-          onSelect: () => run(request.copyRelative),
-        }),
-      )
       return h(
         'div',
         {
           ref,
           className: 'dsf-menu',
           role: 'menu',
-          'aria-label': labels.title,
+          'aria-label': request.title,
           style: { left: String(request.x) + 'px', top: String(request.y) + 'px' },
         },
         rows,
@@ -542,6 +549,107 @@ window.__ModuleLoader__.load({
       }
 
       /**
+       * Hand one http(s) URL to the desktop. The shell's window-open policy
+       * denies the popup and forwards http(s) URLs to the system browser
+       * (`shell.openExternal`); a plain browser deployment opens a new tab.
+       * @param url - absolute http(s) URL.
+       */
+      const openExternal = (url) => {
+        try {
+          window.open(url, '_blank', 'noopener,noreferrer')
+        } catch (error) {
+          console.warn('session folder: open link rejected', error)
+          notify(t('notice.openLinkFailed'), 'error')
+        }
+      }
+
+      /**
+       * Rows of the file menu: open / reveal / editor, then the two copies.
+       * The editor row is added only once the desktop answered which handlers
+       * this file has, so the menu never offers an application it cannot launch.
+       * @param absolute - absolute file path.
+       * @param relative - path relative to the project folder.
+       * @returns a row builder the menu calls with the resolved editor.
+       */
+      const fileMenuRows = (absolute, relative) => (editor) => {
+        const rows = [
+          {
+            key: 'open',
+            label: t('file.open'),
+            icon: h(OpenIcon, {}),
+            onSelect: () => {
+              void openOnHost({ path: absolute })
+            },
+          },
+          {
+            key: 'reveal',
+            label: t('file.reveal'),
+            icon: h(FolderIcon, {}),
+            onSelect: () => {
+              void openOnHost({ path: absolute, action: 'reveal' })
+            },
+          },
+        ]
+        if (editor !== null && editor !== undefined) {
+          rows.push({
+            key: 'editor',
+            label: editor.name,
+            icon:
+              typeof editor.icon === 'string'
+                ? h('img', { src: editor.icon, alt: '', draggable: false })
+                : h(CodeIcon, {}),
+            onSelect: () => {
+              void openOnHost({ path: absolute, application: editor.id })
+            },
+          })
+        }
+        rows.push({ key: 'sep', separator: true })
+        rows.push(
+          {
+            key: 'abs',
+            label: t('file.copyAbsolute'),
+            icon: h(CopyIcon, {}),
+            onSelect: () => {
+              void copyText(absolute, t('notice.copiedAbsolute'))
+            },
+          },
+          {
+            key: 'rel',
+            label: t('file.copyRelative'),
+            icon: h(CopyIcon, {}),
+            onSelect: () => {
+              void copyText(relative, t('notice.copiedRelative'))
+            },
+          },
+        )
+        return rows
+      }
+
+      /**
+       * Rows of the link menu.
+       * @param url - absolute http(s) URL.
+       * @returns a row builder for the shared menu.
+       */
+      const linkMenuRows = (url) => () => [
+        {
+          key: 'open',
+          label: t('url.open'),
+          icon: h(GlobeIcon, {}),
+          onSelect: () => {
+            openExternal(url)
+          },
+        },
+        {
+          key: 'copy',
+          label: t('url.copy'),
+          icon: h(LinkIcon, {}),
+          onSelect: () => {
+            void copyText(url, t('notice.copiedLink'))
+          },
+        },
+      ]
+
+      /**
        * The cwd of the Session shown in the main view, which is the base a
        * conversation file path is relative to.
        * @returns the workspace directory, or undefined without one.
@@ -630,32 +738,38 @@ window.__ModuleLoader__.load({
         const cwd = currentCwd()
         const absolute = isAbsolutePath(value) || cwd === undefined ? value : joinPath(cwd, value)
         const relative = isAbsolutePath(value) ? relativeTo(value, cwd) : value.replace(/^\.\//, '').replace(/\\/g, '/')
-        fileMenuStore.set({
+        menuStore.set({
           x: event.clientX,
           y: event.clientY,
-          labels: {
-            title: t('file.title'),
-            open: t('file.open'),
-            reveal: t('file.reveal'),
-            copyAbsolute: t('file.copyAbsolute'),
-            copyRelative: t('file.copyRelative'),
-          },
-          open: () => {
-            void openOnHost({ path: absolute })
-          },
-          reveal: () => {
-            void openOnHost({ path: absolute, action: 'reveal' })
-          },
-          openWith: (application) => {
-            void openOnHost({ path: absolute, application })
-          },
-          copyAbsolute: () => {
-            void copyText(absolute, t('notice.copiedAbsolute'))
-          },
-          copyRelative: () => {
-            void copyText(relative, t('notice.copiedRelative'))
-          },
+          title: t('file.title'),
+          rows: fileMenuRows(absolute, relative),
           loadEditor: () => loadEditor(absolute),
+        })
+        return true
+      }
+
+      /**
+       * Open this plugin's link menu for an http(s) anchor under the pointer.
+       * @param target - event target.
+       * @param event - the contextmenu event.
+       * @returns whether this handler consumed the event.
+       */
+      const openLinkMenuAt = (target, event) => {
+        const anchor = target.closest('a[href]')
+        if (!(anchor instanceof HTMLAnchorElement)) return false
+        let url
+        try {
+          url = new URL(anchor.href)
+        } catch (error) {
+          return false
+        }
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') return false
+        event.preventDefault()
+        menuStore.set({
+          x: event.clientX,
+          y: event.clientY,
+          title: t('url.title'),
+          rows: linkMenuRows(url.href),
         })
         return true
       }
@@ -684,19 +798,21 @@ window.__ModuleLoader__.load({
         trigger.click()
       }
 
-      // Page-level right-click: a conversation file name opens this plugin's
-      // file menu; a Session row opens that row's own menu at the row.
+      // Page-level right-click: a conversation file name opens the file menu,
+      // an http(s) link opens the link menu, and a Session row opens that row's
+      // own menu at the row.
       ctx.effect(() => {
         const onContextMenu = (event) => {
           const target = event.target
           if (!(target instanceof Element)) return
           if (openFileMenuAt(target, event)) return
+          if (openLinkMenuAt(target, event)) return
           openSessionMenuAt(target, event)
         }
         document.addEventListener('contextmenu', onContextMenu, true)
         return () => {
           document.removeEventListener('contextmenu', onContextMenu, true)
-          fileMenuStore.set(null)
+          menuStore.set(null)
         }
       }, 'dsh-session-folder: context menus')
 
@@ -714,7 +830,7 @@ window.__ModuleLoader__.load({
       )
 
       ctx.slots.inject('shell.overlay', () =>
-        ctx.slots.register({ name: 'shell.overlay', id: 'dsh-session-folder.file-menu', order: 20 }, FileContextMenu),
+        ctx.slots.register({ name: 'shell.overlay', id: 'dsh-session-folder.file-menu', order: 20 }, ContextMenu),
       )
 
       ctx.slots.inject('shell.overlay', () =>

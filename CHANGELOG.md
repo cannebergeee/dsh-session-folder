@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.4.0 — 2026-10-22
+
+- **Right-click an http(s) link in the conversation** → link menu with **Open in default browser** and
+  **Copy link**. The menu surface is now shared with the file menu (the request supplies its own rows).
+- “Open in default browser” uses `window.open`, which the desktop shell's window-open policy denies and
+  forwards to `shell.openExternal` (the system browser); a browser deployment opens a tab.
+
 ## 1.3.1 — 2026-10-22
 
 - **Fix**: `cordis.patch.yml` still inserted the row under the pre-rename package name

@@ -1,8 +1,9 @@
 # dsh-session-folder
 
 > Local-path shortcuts for the [DeepSeek Harness (DSH)](https://github.com/deepseek-ai) UI:
-> **right-click a Session row** to open its project folder, and **right-click a file name in the conversation**
-> to open it, reveal it in the file manager, open it in VS Code, or copy its absolute / relative path.
+> **right-click a Session row** to open its project folder, **right-click a file name in the conversation**
+> to open it, reveal it in the file manager, open it in VS Code, or copy its absolute / relative path, and
+> **right-click an http(s) link** to open it in the default browser or copy it.
 
 中文说明: [README.md](README.md)
 
@@ -39,6 +40,17 @@ link that points at a file):
 
 Keyboard: `↑`/`↓` to move, `Enter`/`Space` to run, `Esc` to dismiss; outside click, scroll, or window blur
 closes it; the menu clamps itself into the viewport.
+
+### 3. Web link → context menu
+
+**Right-click an http(s) link in the conversation** (a Markdown link):
+
+| Row | Behavior |
+|---|---|
+| Open in default browser | Hand the URL to the desktop's system browser (`window.open` → the shell's window-open policy calls `shell.openExternal`) |
+| Copy link | Copy the resolved absolute URL |
+
+The link menu shares the file menu's surface, keyboard handling, and dismissal.
 
 ---
 
@@ -100,6 +112,9 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 - **VS Code row**: `session.workspacePathApplications` lists the desktop handlers registered for that file
   (Shell `SHAssocEnumHandlers` on Windows). The row appears only when VS Code is among them; nothing is faked.
 - **Copy**: `navigator.clipboard.writeText`, with success/failure notices.
+- **Web links**: an http(s) link is a plain `<a href target="_blank">`; “Open in default browser” uses
+  `window.open(url, '_blank', 'noopener,noreferrer')` — the desktop shell denies every new window and forwards
+  http(s) URLs to `shell.openExternal`, so it lands in the system browser; a plain browser deployment opens a tab.
 - **Styling**: exactly the host's menu and toast tokens (`--dsw-menu-surface-fill` +
   `--dsw-menu-backdrop-filter` translucent material, `--dsw-elevation-prominent`, `--dsw-radius-lg`,
   `--dsw-alias-menu-icon`, `--dsw-alias-toast-bg`, `--dsw-shadow-lv3` …), so it follows light and dark themes.
