@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.7.1 — 2026-10-22
+
+- **Fix**: the image-link menu opened the wrong paths, because v1.7.0 guessed the target from the visible
+  label. The exact target is now read from the link component's own React props (`file.path`, the markdown
+  destination), and the label is only the last resort when those props are unavailable.
+- The props read stays local to the element being right-clicked (walking its own fiber ancestry, guarded by
+  try/catch); the rest of the menu logic is unchanged.
+
 ## 1.7.0 — 2026-10-22
 
 - **Image links** (Markdown links to `.png` and other image files) now get the file menu. The host removes

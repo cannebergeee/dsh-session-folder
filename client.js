@@ -802,11 +802,16 @@ window.__ModuleLoader__.load({
           if (typeof rawTitle === 'string' && rawTitle.trim() !== '') {
             value = rawTitle.trim()
           } else {
-            // An image link drops `title` once the chat can preview it, so fall
-            // back to the visible label when that label names a file. The path
-            // itself never reaches the DOM in that case.
-            value = (button.textContent === null ? '' : button.textContent).trim()
-            if (!looksLikeFilePath(value)) return false
+            // An image link drops `title` once the chat can preview it, so the
+            // path is read from the link component's props; only when that is
+            // unavailable fall back to a label that happens to name a file.
+            const fromProps = pathFromReactProps(button)
+            if (typeof fromProps === 'string' && fromProps !== '') {
+              value = fromProps
+            } else {
+              value = (button.textContent === null ? '' : button.textContent).trim()
+              if (!looksLikeFilePath(value)) return false
+            }
           }
           if (value === '' || value.startsWith('@')) return false
         } else {
@@ -966,8 +971,8 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * Whether a link label plausibly names a file, which is all the DOM offers
-     * for an image link whose preview replaced the `title` attribute.
+     * Whether a link label plausibly names a file, which is the last resort for
+     * a link whose path is unavailable.
      * @param value - visible label.
      * @returns true when the label can be treated as a path.
      */
@@ -975,6 +980,33 @@ window.__ModuleLoader__.load({
       if (value === '' || value.length > 260) return false
       if (/\s/.test(value)) return false
       return /\.[A-Za-z0-9]{1,10}$/.test(value)
+    }
+
+    /**
+     * Recover the file path of the chat link that owns `node` from its React
+     * props. The chat builds a file link from `{ file: { path } }` and drops the
+     * `title` attribute as soon as an inline preview exists, so the props are
+     * the only place the exact target survives; the visible label may differ.
+     * @param node - element whose fiber ancestry to inspect.
+     * @returns the path, or undefined when no ancestor carries one.
+     */
+    function pathFromReactProps(node) {
+      let fiber
+      try {
+        const key = Object.keys(node).find((name) => name.startsWith('__reactFiber$') || name.startsWith('__reactInternalInstance$'))
+        if (key === undefined) return undefined
+        fiber = node[key]
+        for (let depth = 0; fiber !== null && fiber !== undefined && depth < 40; depth += 1) {
+          const props = fiber.memoizedProps
+          const file = props !== null && typeof props === 'object' ? props.file : undefined
+          const path = file !== null && typeof file === 'object' ? file.path : undefined
+          if (typeof path === 'string' && path !== '') return path
+          fiber = fiber.return
+        }
+      } catch (error) {
+        return undefined
+      }
+      return undefined
     }
 
     /**
