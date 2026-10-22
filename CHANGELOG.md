@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.1 — 2026-10-22
+
+- Plugin panel display name changed: **右键增强** / **Right-click Enhancements** (was “打开会话目录与文件右键菜单” /
+  “Session Folder & File Actions”). Descriptions now mention the link menu too. No behaviour change.
+
 ## 1.4.0 — 2026-10-22
 
 - **Right-click an http(s) link in the conversation** → link menu with **Open in default browser** and

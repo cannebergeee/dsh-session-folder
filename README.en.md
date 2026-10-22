@@ -7,6 +7,8 @@
 
 中文说明: [README.md](README.md)
 
+> Plugins panel name: **Right-click Enhancements** (中文：右键增强).
+
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 
