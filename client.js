@@ -72,6 +72,13 @@ window.__ModuleLoader__.load({
       'tree.unpin': '取消置顶',
       'tree.fork': '创建分叉',
       'tree.archive': '归档会话',
+      'tree.rename': '重命名',
+      'tree.rename.title': '重命名会话',
+      'tree.rename.placeholder': '会话名称',
+      'tree.rename.empty': '名称不能为空',
+      'tree.rename.save': '保存',
+      'tree.rename.cancel': '取消',
+      'tree.rename.failed': '重命名失败，请重试',
       'tree.copyId': '复制会话 ID',
       'tree.openFolder': '在资源管理器中打开',
       'tree.resetParent': '恢复真实 fork 层级',
@@ -120,6 +127,13 @@ window.__ModuleLoader__.load({
       'tree.unpin': 'Unpin session',
       'tree.fork': 'Fork session',
       'tree.archive': 'Archive session',
+      'tree.rename': 'Rename',
+      'tree.rename.title': 'Rename session',
+      'tree.rename.placeholder': 'Session name',
+      'tree.rename.empty': 'The name cannot be empty',
+      'tree.rename.save': 'Save',
+      'tree.rename.cancel': 'Cancel',
+      'tree.rename.failed': 'Rename failed. Please try again.',
       'tree.copyId': 'Copy session ID',
       'tree.openFolder': 'Open in File Explorer',
       'tree.resetParent': 'Restore real fork lineage',
@@ -148,8 +162,20 @@ window.__ModuleLoader__.load({
       '.dsf-menuitem-icon svg{width:14px;height:14px}',
       '.dsf-menuitem-icon img{width:14px;height:14px;object-fit:contain}',
       '.dsf-menuitem-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.dsf-menuitem-shortcut{flex:none;padding-left:16px;color:var(--dsw-alias-label-tertiary);font-size:11.5px;line-height:20px;white-space:nowrap}',
       '.dsf-menu{position:fixed;z-index:1100;box-sizing:border-box;min-width:144px;max-width:360px;padding:4px;display:flex;flex-direction:column;gap:0;border:0;border-radius:var(--dsw-radius-lg);background:var(--dsw-menu-surface-fill);backdrop-filter:var(--dsw-menu-backdrop-filter);--dsw-elevation-stroke-color:var(--dsw-alias-border-l1);box-shadow:var(--dsw-elevation-prominent);pointer-events:auto;font-family:inherit;outline:none}',
       '.dsf-menu-sep{height:.5px;margin:3px 2px;background:var(--dsw-alias-border-l2)}',
+      '.dsf-dialog-backdrop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;background:rgba(15,20,30,.28);backdrop-filter:blur(1.5px);pointer-events:auto}',
+      '.dsf-dialog{width:min(420px,calc(100vw - 40px));display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-lg);background:var(--dsw-menu-surface-fill);color:var(--dsw-alias-label-primary);box-shadow:var(--dsw-elevation-prominent);font-family:inherit}',
+      '.dsf-dialog-title{font-size:14px;font-weight:600;line-height:20px}',
+      '.dsf-dialog-input{box-sizing:border-box;width:100%;height:34px;padding:0 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);outline:none;font:inherit;font-size:13px}',
+      '.dsf-dialog-input:focus{border-color:var(--dsw-alias-brand-primary)}',
+      '.dsf-dialog-error{color:var(--dsw-alias-state-error-primary);font-size:12px;line-height:18px}',
+      '.dsf-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:2px}',
+      '.dsf-dialog-button{height:30px;padding:0 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12.5px;cursor:pointer}',
+      '.dsf-dialog-button:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-dialog-button.is-primary{border-color:var(--dsw-alias-brand-primary);background:var(--dsw-alias-brand-primary);color:var(--dsw-alias-label-inverse,#fff);font-weight:600}',
+      '.dsf-dialog-button:disabled{opacity:.5;cursor:default}',
       '.dsf-notice{position:fixed;top:40px;left:50%;transform:translateX(-50%);z-index:1100;display:flex;align-items:center;gap:10px;width:max-content;max-width:min(640px,calc(100vw - 48px));padding:12px 16px;border-radius:var(--dsw-radius-lg);background:var(--dsw-alias-toast-bg);color:var(--dsw-alias-toast-label);font-family:inherit;font-size:14px;line-height:22px;box-shadow:var(--dsw-shadow-lv3);pointer-events:none;animation:dsf-notice-in .18s ease-out}',
       '.dsf-notice-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--dsw-alias-state-error-primary)}',
       '.dsf-notice[data-tone=success] .dsf-notice-dot{background:var(--dsw-alias-state-success-primary)}',
@@ -212,10 +238,13 @@ window.__ModuleLoader__.load({
       '.dsf-tree-dot[data-state=warning]{color:var(--dsw-alias-state-warn-primary)}',
       '.dsf-tree-dot[data-state=error]{color:var(--dsw-alias-state-error-primary)}',
       '.dsf-tree-dot[data-state=idle]{color:var(--dsw-alias-state-idle-primary)}',
-      '.dsf-tree-title{flex:1;min-width:0;margin-left:4px;font-size:13px;color:var(--dsw-alias-label-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.dsf-tree-title{flex:1;min-width:0;margin:0 6px 0 4px;font-size:13px;color:var(--dsw-alias-label-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.dsf-tree-title[data-scrolled]{mask-image:linear-gradient(90deg,#0000,#000 12px)}',
+      '.dsf-tree-title[data-clipped]{mask-image:linear-gradient(270deg,#0000,#000 12px)}',
+      '.dsf-tree-row:hover .dsf-tree-title,.dsf-tree-row:focus-within .dsf-tree-title{text-overflow:clip}',
       '.dsf-tree-count{flex:none;margin-left:6px;padding:0 5px;height:16px;display:inline-flex;align-items:center;border-radius:5px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-size:10px}',
-      '.dsf-tree-actions{flex:none;display:flex;align-items:center;gap:1px;margin-left:4px;opacity:0;pointer-events:none;transition:opacity .12s ease}',
-      '.dsf-tree-row:hover .dsf-tree-actions,.dsf-tree-row:focus-within .dsf-tree-actions{opacity:1;pointer-events:auto}',
+      '.dsf-tree-actions{display:none;flex:none;align-items:center;gap:1px;margin-left:4px}',
+      '.dsf-tree-row:hover .dsf-tree-actions,.dsf-tree-row:focus-within .dsf-tree-actions{display:inline-flex}',
       '.dsf-tree-row:hover .dsf-tree-count,.dsf-tree-row:focus-within .dsf-tree-count{display:none}',
       '.dsf-tree-action{width:22px;height:22px;padding:0;border:0;border-radius:5px;background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}',
       '.dsf-tree-action:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
@@ -224,7 +253,7 @@ window.__ModuleLoader__.load({
       '.dsf-tree-row.is-dragging{opacity:.55}',
       '.dsf-tree-row.is-drop-target{background:var(--dsw-alias-interactive-bg-hover);box-shadow:inset 0 0 0 1px var(--dsw-alias-brand-primary)}',
       '.dsf-tree-group-header.is-drop-target{background:var(--dsw-alias-interactive-bg-hover);box-shadow:inset 0 0 0 1px var(--dsw-alias-brand-primary)}',
-      '@media (hover:none){.dsf-tree-actions{opacity:1;pointer-events:auto}}',
+      '@media (hover:none){.dsf-tree-actions{display:inline-flex}}',
       '.dsf-tree-empty{padding:26px 16px;text-align:center;font-size:12px;line-height:1.7;color:var(--dsw-alias-label-secondary)}',
     ].join('')
 
@@ -261,6 +290,8 @@ window.__ModuleLoader__.load({
     const noticeStore = createStore(null)
     /** Whether the fork-tree view covers the sidebar's workspace browser. */
     const treeOpenStore = createStore(false)
+    /** Pending tree-row rename request, or null. */
+    const treeRenameStore = createStore(null)
     /** Opens a Session in the main column; installed by `apply` (no slot injection needed). */
     let treeOpenSession = () => {}
 
@@ -377,6 +408,7 @@ window.__ModuleLoader__.load({
      * One `role="menuitem"` row, matching the host menu row metrics.
      * @param props.label - visible text.
      * @param props.icon - leading icon.
+     * @param props.shortcut - optional shortcut hint.
      * @param props.onSelect - activation callback.
      * @param props.tabIndex - optional tab order.
      * @returns the row.
@@ -393,6 +425,9 @@ window.__ModuleLoader__.load({
         },
         h('span', { key: 'icon', className: 'dsf-menuitem-icon' }, props.icon),
         h('span', { key: 'label', className: 'dsf-menuitem-label' }, props.label),
+        props.shortcut === undefined || props.shortcut === null
+          ? null
+          : h('span', { key: 'shortcut', className: 'dsf-menuitem-shortcut' }, props.shortcut),
       )
     }
 
@@ -511,6 +546,7 @@ window.__ModuleLoader__.load({
             key: spec.key,
             label: spec.label,
             icon: spec.icon,
+            shortcut: spec.shortcut,
             tabIndex: -1,
             onSelect: () => run(spec.onSelect),
           }),
@@ -738,6 +774,19 @@ window.__ModuleLoader__.load({
         {},
         h('rect', { key: 'back', x: 2.2, y: 5.1, width: 7.2, height: 8.7, rx: 1.1 }),
         h('path', { key: 'front', d: 'M6.1 5.1V3.4c0-.7.5-1.2 1.2-1.2h5.3c.7 0 1.2.5 1.2 1.2v6.1c0 .7-.5 1.2-1.2 1.2h-1.7' }),
+      )
+    }
+
+    /**
+     * Pencil glyph for the rename row.
+     * @returns the icon.
+     */
+    function EditIcon() {
+      return h(
+        Icon,
+        {},
+        h('path', { key: 'body', d: 'M2.4 13.6l.5-3.2L10.7 2.6a1.4 1.4 0 0 1 2 0l.7.7a1.4 1.4 0 0 1 0 2l-7.8 7.8-3.2.5Z' }),
+        h('path', { key: 'tip', d: 'M10.2 3.1l2.7 2.7' }),
       )
     }
 
@@ -988,6 +1037,75 @@ window.__ModuleLoader__.load({
     }
 
     /**
+     * Session title cell with the host's clipped-title behaviour: full width at
+     * rest, clipped with a fade on hover, and a slow marquee toward the end
+     * while the pointer is over it.
+     * @param props.text - display title.
+     * @returns the title span.
+     */
+    function TreeTitle(props) {
+      const ref = React.useRef(null)
+      const frame = React.useRef(0)
+      React.useEffect(() => () => {
+        if (frame.current !== 0) cancelAnimationFrame(frame.current)
+      }, [])
+      const rest = () => {
+        if (frame.current !== 0) {
+          cancelAnimationFrame(frame.current)
+          frame.current = 0
+        }
+        const element = ref.current
+        if (element === null) return
+        element.scrollLeft = 0
+        delete element.dataset.scrolled
+        delete element.dataset.clipped
+      }
+      const reveal = () => {
+        const element = ref.current
+        if (element === null) return
+        const range = element.scrollWidth - element.clientWidth
+        if (range <= 8) {
+          rest()
+          return
+        }
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          element.scrollLeft = range
+          element.dataset.scrolled = ''
+          delete element.dataset.clipped
+          return
+        }
+        if (frame.current !== 0) cancelAnimationFrame(frame.current)
+        let previous
+        let position = 0
+        const step = (now) => {
+          position += previous === undefined ? 0 : (now - previous) * 0.03
+          previous = now
+          const left = Math.min(position, range)
+          element.scrollLeft = left
+          if (left > 0) element.dataset.scrolled = ''
+          else delete element.dataset.scrolled
+          if (left < range) element.dataset.clipped = ''
+          else delete element.dataset.clipped
+          if (position < range) frame.current = requestAnimationFrame(step)
+          else frame.current = 0
+        }
+        frame.current = requestAnimationFrame(step)
+      }
+      return h(
+        'span',
+        {
+          key: 'title',
+          ref,
+          className: 'dsf-tree-title',
+          title: props.text,
+          onPointerEnter: reveal,
+          onPointerLeave: rest,
+        },
+        props.text,
+      )
+    }
+
+    /**
      * Recursive tree rows for one Workspace group.
      * @param props.group - derived group.
      * @param props.roots - rows to render at this level.
@@ -1095,7 +1213,7 @@ window.__ModuleLoader__.load({
                 )
               : h('span', { key: 'twisty', className: 'dsf-tree-twisty is-spacer' }),
             h('span', { key: 'state', className: 'dsf-tree-state-slot' }, h(TreeStateDot, { state: stateOf(row) })),
-            h('span', { key: 'title', className: 'dsf-tree-title' }, treeTitle(row, t)),
+            h(TreeTitle, { key: 'title', text: treeTitle(row, t) }),
             shownChildren.length > 0
               ? h('span', { key: 'count', className: 'dsf-tree-count' }, String(shownChildren.length))
               : null,
@@ -1408,7 +1526,7 @@ window.__ModuleLoader__.load({
       React.useEffect(() => {
         if (!open) return undefined
         const onKeyDown = (event) => {
-          if (event.key === 'Escape') {
+          if (event.key === 'Escape' && treeRenameStore.get() === null) {
             event.preventDefault()
             treeOpenStore.set(false)
           }
@@ -1549,6 +1667,8 @@ window.__ModuleLoader__.load({
       }
       const openRowMenu = (row, x, y) => {
         const isPinned = pinned.has(row.id)
+        const mac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform || '')
+        const mod = mac ? '⌘' : 'Ctrl'
         const rows = [
           {
             key: 'pin',
@@ -1557,25 +1677,25 @@ window.__ModuleLoader__.load({
             onSelect: () => pinToggle(row, isPinned),
           },
           {
+            key: 'rename',
+            label: t('tree.rename'),
+            icon: h(EditIcon, {}),
+            shortcut: mod + '+Alt+G',
+            onSelect: () => treeRenameStore.set({ sessionId: row.id, title: treeTitle(row, t) }),
+          },
+          {
             key: 'fork',
             label: t('tree.fork'),
             icon: h(BranchIcon, {}),
+            shortcut: mod + '+Alt+F',
             onSelect: () => forkRow(row),
           },
           {
             key: 'archive',
             label: t('tree.archive'),
             icon: h(ArchiveIcon, {}),
+            shortcut: mod + '+Shift+A',
             onSelect: () => archiveRow(row),
-          },
-          { key: 'sep-1', separator: true },
-          {
-            key: 'copy-id',
-            label: t('tree.copyId'),
-            icon: h(CopyIcon, {}),
-            onSelect: () => {
-              if (copySessionId !== null) void copySessionId(row.id)
-            },
           },
           {
             key: 'open-folder',
@@ -1583,6 +1703,20 @@ window.__ModuleLoader__.load({
             icon: h(FolderIcon, {}),
             onSelect: () => {
               if (openFolder !== null) void openFolder(row.id)
+            },
+          },
+          {
+            key: 'tree-view',
+            label: t('tree.menu'),
+            icon: h(BranchIcon, {}),
+            onSelect: () => treeOpenStore.set(true),
+          },
+          {
+            key: 'copy-id',
+            label: t('tree.copyId'),
+            icon: h(CopyIcon, {}),
+            onSelect: () => {
+              if (copySessionId !== null) void copySessionId(row.id)
             },
           },
         ]
@@ -1707,6 +1841,100 @@ window.__ModuleLoader__.load({
                   t,
                 }),
               ),
+      )
+    }
+
+    /**
+     * Rename dialog for a tree row. The menu closes before this surface opens;
+     * the request carries the Session id and current title.
+     * @param props.renameSession - injected Host rename operation.
+     * @param props.t - bound locale translate.
+     * @returns the dialog, or null while closed.
+     */
+    function SessionRenameDialog(props) {
+      const request = useStore(treeRenameStore)
+      const [draft, setDraft] = React.useState('')
+      const [busy, setBusy] = React.useState(false)
+      const [error, setError] = React.useState(null)
+      const inputRef = React.useRef(null)
+      const t = typeof props.t === 'function' ? props.t : (key) => key
+      React.useEffect(() => {
+        if (request === null) return undefined
+        setDraft(request.title === undefined || request.title === null ? '' : request.title)
+        setError(null)
+        setBusy(false)
+        const frame = requestAnimationFrame(() => {
+          const element = inputRef.current
+          if (element === null) return
+          element.focus()
+          element.select()
+        })
+        return () => cancelAnimationFrame(frame)
+      }, [request])
+      if (request === null) return null
+      const close = () => {
+        if (!busy) treeRenameStore.set(null)
+      }
+      const save = () => {
+        const title = draft.trim()
+        if (title === '') {
+          setError(t('tree.rename.empty'))
+          return
+        }
+        setBusy(true)
+        setError(null)
+        Promise.resolve(props.renameSession(request.sessionId, title)).then(
+          () => treeRenameStore.set(null),
+          () => {
+            setBusy(false)
+            setError(t('tree.rename.failed'))
+          },
+        )
+      }
+      return h(
+        'div',
+        {
+          className: 'dsf-dialog-backdrop',
+          role: 'presentation',
+          onPointerDown: (event) => {
+            if (event.target === event.currentTarget) close()
+          },
+          onKeyDown: (event) => {
+            if (event.key !== 'Escape') return
+            event.preventDefault()
+            event.stopPropagation()
+            close()
+          },
+        },
+        h(
+          'div',
+          { className: 'dsf-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('tree.rename.title') },
+          h('div', { className: 'dsf-dialog-title' }, t('tree.rename.title')),
+          h('input', {
+            ref: inputRef,
+            className: 'dsf-dialog-input',
+            value: draft,
+            placeholder: t('tree.rename.placeholder'),
+            'aria-label': t('tree.rename.placeholder'),
+            disabled: busy,
+            onChange: (event) => {
+              setDraft(event.target.value)
+              setError(null)
+            },
+            onKeyDown: (event) => {
+              if (event.key !== 'Enter' || event.nativeEvent.isComposing) return
+              event.preventDefault()
+              save()
+            },
+          }),
+          error === null ? null : h('div', { className: 'dsf-dialog-error', role: 'alert' }, error),
+          h(
+            'div',
+            { className: 'dsf-dialog-actions' },
+            h('button', { type: 'button', className: 'dsf-dialog-button', disabled: busy, onClick: close }, t('tree.rename.cancel')),
+            h('button', { type: 'button', className: 'dsf-dialog-button is-primary', disabled: busy, onClick: save }, t('tree.rename.save')),
+          ),
+        ),
       )
     }
 
@@ -2178,6 +2406,28 @@ window.__ModuleLoader__.load({
         ctx.slots.register(
           {
             name: 'shell.overlay',
+            id: 'dsh-session-folder.tree-rename',
+            order: 22,
+            locale: NS,
+            inject: () => ({
+              renameSession: async (sessionId, title) => {
+                const result = await ctx.sessions.using(sessionId, { source: 'workspaceOperation' }, (reference) =>
+                  reference.binding.session.rename(title),
+                )
+                if (result !== undefined && result !== null && result.ok === false) {
+                  throw new Error(result.error === undefined ? 'rename failed' : result.error.message)
+                }
+              },
+            }),
+          },
+          SessionRenameDialog,
+        ),
+      )
+
+      ctx.slots.inject('shell.overlay', () =>
+        ctx.slots.register(
+          {
+            name: 'shell.overlay',
             id: 'dsh-session-folder.fork-tree',
             order: 18,
             locale: NS,
@@ -2186,6 +2436,7 @@ window.__ModuleLoader__.load({
               unpinSession: (sessionId) => ctx.uiWorkspace.unpinSession(sessionId),
               archiveSession: (sessionId, options) => ctx.uiWorkspace.archiveSession(sessionId, options),
               forkSession: (sessionId) => ctx.uiWorkspace.forkSession(sessionId),
+              copySessionId: (sessionId) => copyText(sessionId, t('tree.notice.sessionIdCopied')),
               copySessionId: (sessionId) => copyText(sessionId, t('tree.notice.sessionIdCopied')),
               openFolder: (sessionId) => openFolder(sessionId),
               notify,

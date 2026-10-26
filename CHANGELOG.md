@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.9.4 — 2026-10-26
+
+- **Tree-row menu now mirrors the host Session menu**: pin, rename (with shortcut hint), fork, archive, open in
+  File Explorer, fork-tree view, copy Session ID — in the host's order. Rename opens a small plugin dialog and
+  calls the same Host `session.rename` operation; the host shortcuts are shown as hints.
+- **Session titles use the host's clipped-title behaviour**: row actions are `display:none` at rest (so the title
+  gets the full row width), the title clips/fades on hover, and it slowly marquees toward the end while the pointer
+  is over it. This removes the extra indentation-era truncation that made tree titles shorter than the host list.
+- No host source change.
+
 ## 1.9.3 — 2026-10-26
 
 - **「工作区」入口 hover 改为方案 A（宽松胶囊）**：点击热区在文字四周扩到 3px × 9px（高度 26，圆角 8），

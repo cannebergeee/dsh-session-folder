@@ -14,8 +14,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.3, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.3>
+> Latest release (v1.9.4, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.4>
 
 ---
 
@@ -96,10 +96,14 @@ or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers 
 - **Title style**: the panel title reuses the host “Workspaces” `sectionLabel` style (14px / 400 /
   `--dsw-alias-label-tertiary`, line-height 20px) with no extra hint copy; the top-right control uses the host's
   exact **16px / 1px-stroke closed-folder artwork** (closes back to the list).
-- **Row actions**: hovering a row shows the host-style `…` / archive / pin buttons. The `…` menu offers pin,
-  fork, archive, copy Session ID, open in File Explorer, and “Restore real fork lineage”; right-clicking a row
-  opens the same menu. Archiving a running Session asks to stop activity first. Pinned Sessions sort first at
-  their level.
+- **Row actions**: hovering a row shows the host-style `…` / archive / pin buttons. The `…` menu follows the
+  host Session menu order: pin, rename (with the host shortcut hint), fork, archive, open in File Explorer,
+  fork-tree view, copy Session ID. Rename opens a compact plugin dialog and calls the same Host `session.rename`
+  operation; right-clicking a row opens the same menu. Archiving a running Session asks to stop activity first.
+  Pinned Sessions sort first at their level.
+- **Title display**: row actions reserve no width at rest, so the title gets the full row width. On hover the title
+  clips/fades like the host and slowly marquees toward the end while the pointer is over it; the native `title`
+  tooltip is kept as a fallback.
 - **Drag to re-nest**: drop a Session on another row to make it that row's child; drop it on a Workspace group
   header to make it a root Session. Cycles and cross-Workspace drops are rejected and the result is persisted.
   **This changes the plugin tree's display hierarchy only** — the host session header's `parentSession` is
