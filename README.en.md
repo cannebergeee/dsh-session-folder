@@ -14,8 +14,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.5, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.5>
+> Latest release (v1.9.6, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.6>
 
 ---
 
@@ -102,6 +102,9 @@ or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers 
   operation; right-clicking a row opens the same menu. **Right-clicking a Workspace group header** also offers
   “Open in File Explorer” for that Workspace directory. Archiving a running Session asks to stop activity first.
   Pinned Sessions sort first at their level.
+- **Workspace group actions**: hovering a group header shows the host Workspace row's two buttons — `…` renames or
+  deletes the workspace (delete asks for confirmation and calls the Host delete operation), and `＋` starts a new
+  Session in that Workspace via `uiWorkspace.startSession`.
 - **Title display**: row actions reserve no width at rest, so the title gets the full row width. On hover the title
   clips/fades like the host and slowly marquees toward the end while the pointer is over it; the native `title`
   tooltip is kept as a fallback and an in-flight marquee no longer dismisses an open context menu.

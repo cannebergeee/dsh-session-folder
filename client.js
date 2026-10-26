@@ -74,6 +74,15 @@ window.__ModuleLoader__.load({
       'tree.archive': '归档会话',
       'tree.rename': '重命名',
       'tree.rename.title': '重命名会话',
+      'tree.rename.workspaceTitle': '重命名工作区',
+      'tree.workspaceRename': '重命名工作区',
+      'tree.workspaceDelete': '删除工作区',
+      'tree.workspaceDelete.title': '删除工作区？',
+      'tree.workspaceDelete.confirm': '删除',
+      'tree.workspaceDelete.cancel': '取消',
+      'tree.workspaceNewSession': '新会话',
+      'tree.notice.workspaceDeleted': '工作区已删除',
+      'tree.notice.workspaceRenameFailed': '重命名工作区失败',
       'tree.rename.placeholder': '会话名称',
       'tree.rename.empty': '名称不能为空',
       'tree.rename.save': '保存',
@@ -129,6 +138,15 @@ window.__ModuleLoader__.load({
       'tree.archive': 'Archive session',
       'tree.rename': 'Rename',
       'tree.rename.title': 'Rename session',
+      'tree.rename.workspaceTitle': 'Rename workspace',
+      'tree.workspaceRename': 'Rename workspace',
+      'tree.workspaceDelete': 'Delete workspace',
+      'tree.workspaceDelete.title': 'Delete this workspace?',
+      'tree.workspaceDelete.confirm': 'Delete',
+      'tree.workspaceDelete.cancel': 'Cancel',
+      'tree.workspaceNewSession': 'New session',
+      'tree.notice.workspaceDeleted': 'Workspace deleted',
+      'tree.notice.workspaceRenameFailed': 'Could not rename the workspace',
       'tree.rename.placeholder': 'Session name',
       'tree.rename.empty': 'The name cannot be empty',
       'tree.rename.save': 'Save',
@@ -163,6 +181,7 @@ window.__ModuleLoader__.load({
       '.dsf-menuitem-icon img{width:14px;height:14px;object-fit:contain}',
       '.dsf-menuitem-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.dsf-menuitem-shortcut{flex:none;padding-left:16px;color:var(--dsw-alias-label-tertiary);font-size:11.5px;line-height:20px;white-space:nowrap}',
+      '.dsf-menuitem.is-danger,.dsf-menuitem.is-danger .dsf-menuitem-icon{color:var(--dsw-alias-state-error-primary)}',
       '.dsf-menu{position:fixed;z-index:1100;box-sizing:border-box;min-width:144px;max-width:360px;padding:4px;display:flex;flex-direction:column;gap:0;border:0;border-radius:var(--dsw-radius-lg);background:var(--dsw-menu-surface-fill);backdrop-filter:var(--dsw-menu-backdrop-filter);--dsw-elevation-stroke-color:var(--dsw-alias-border-l1);box-shadow:var(--dsw-elevation-prominent);pointer-events:auto;font-family:inherit;outline:none}',
       '.dsf-menu-sep{height:.5px;margin:3px 2px;background:var(--dsw-alias-border-l2)}',
       '.dsf-dialog-backdrop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;background:rgba(15,20,30,.28);backdrop-filter:blur(1.5px);pointer-events:auto}',
@@ -207,6 +226,9 @@ window.__ModuleLoader__.load({
       '.dsf-tree-group{margin-top:6px}',
       '.dsf-tree-group-header{display:flex;align-items:center;gap:6px;height:30px;padding:0 6px;border-radius:7px;cursor:pointer;user-select:none;outline:none}',
       '.dsf-tree-group-header:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-tree-group-actions{display:none;flex:none;align-items:center;gap:1px;margin-left:4px}',
+      '.dsf-tree-group-header:hover .dsf-tree-group-actions,.dsf-tree-group-header:focus-within .dsf-tree-group-actions{display:inline-flex}',
+      '.dsf-tree-group-header:hover .dsf-tree-group-count,.dsf-tree-group-header:focus-within .dsf-tree-group-count{display:none}',
       '.dsf-tree-group-header:focus-visible{box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
       '.dsf-tree-group-name{flex:1;min-width:0;font-size:12px;font-weight:600;color:var(--dsw-alias-label-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.dsf-tree-group-count{flex:none;font-size:10.5px;color:var(--dsw-alias-label-secondary)}',
@@ -409,6 +431,7 @@ window.__ModuleLoader__.load({
      * @param props.label - visible text.
      * @param props.icon - leading icon.
      * @param props.shortcut - optional shortcut hint.
+     * @param props.danger - render the destructive color.
      * @param props.onSelect - activation callback.
      * @param props.tabIndex - optional tab order.
      * @returns the row.
@@ -419,7 +442,7 @@ window.__ModuleLoader__.load({
         {
           type: 'button',
           role: 'menuitem',
-          className: 'dsf-menuitem',
+          className: 'dsf-menuitem' + (props.danger === true ? ' is-danger' : ''),
           tabIndex: props.tabIndex,
           onClick: props.onSelect,
         },
@@ -552,6 +575,7 @@ window.__ModuleLoader__.load({
             label: spec.label,
             icon: spec.icon,
             shortcut: spec.shortcut,
+            danger: spec.danger === true,
             tabIndex: -1,
             onSelect: () => run(spec.onSelect),
           }),
@@ -792,6 +816,33 @@ window.__ModuleLoader__.load({
         {},
         h('path', { key: 'body', d: 'M2.4 13.6l.5-3.2L10.7 2.6a1.4 1.4 0 0 1 2 0l.7.7a1.4 1.4 0 0 1 0 2l-7.8 7.8-3.2.5Z' }),
         h('path', { key: 'tip', d: 'M10.2 3.1l2.7 2.7' }),
+      )
+    }
+
+    /**
+     * Trash glyph for the workspace delete row.
+     * @returns the icon.
+     */
+    function TrashIcon() {
+      return h(
+        Icon,
+        {},
+        h('path', { key: 'lid', d: 'M3 4.3h10' }),
+        h('path', { key: 'handle', d: 'M6.2 4.3V2.8h3.6v1.5' }),
+        h('path', { key: 'body', d: 'M4.2 4.3l.6 9.1h6.4l.6-9.1M6.7 7v4.1M9.3 7v4.1' }),
+      )
+    }
+
+    /**
+     * New-session glyph (circle plus) for a Workspace group header.
+     * @returns the icon.
+     */
+    function NewChatIcon() {
+      return h(
+        Icon,
+        {},
+        h('circle', { key: 'ring', cx: 8, cy: 8, r: 5.8 }),
+        h('path', { key: 'plus', d: 'M8 5.2v5.6M5.2 8h5.6' }),
       )
     }
 
@@ -1299,7 +1350,7 @@ window.__ModuleLoader__.load({
      * @returns the group rows.
      */
     function TreeGroups(props) {
-      const { groups, visible, collapsed, onToggle, drag, onGroupMenu, t } = props
+      const { groups, visible, collapsed, onToggle, drag, onGroupMenu, onGroupActions, onNewSession, t } = props
       const rendered = []
       for (const group of groups) {
         const groupKey = 'ws:' + group.key
@@ -1354,6 +1405,46 @@ window.__ModuleLoader__.load({
               ),
               h('span', { key: 'name', className: 'dsf-tree-group-name' }, group.title),
               h('span', { key: 'count', className: 'dsf-tree-group-count' }, String(group.total)),
+              group.key === ''
+                ? null
+                : h(
+                    'span',
+                    {
+                      key: 'actions',
+                      className: 'dsf-tree-group-actions',
+                      onClick: (event) => event.stopPropagation(),
+                      onPointerDown: (event) => event.stopPropagation(),
+                    },
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'dsf-tree-action',
+                        title: t('tree.more'),
+                        'aria-label': t('tree.more'),
+                        onClick: (event) => {
+                          event.stopPropagation()
+                          const rect = event.currentTarget.getBoundingClientRect()
+                          onGroupActions(group, rect.left, rect.bottom + 4)
+                        },
+                      },
+                      h(EllipsisIcon, {}),
+                    ),
+                    h(
+                      'button',
+                      {
+                        type: 'button',
+                        className: 'dsf-tree-action',
+                        title: t('tree.workspaceNewSession'),
+                        'aria-label': t('tree.workspaceNewSession'),
+                        onClick: (event) => {
+                          event.stopPropagation()
+                          onNewSession(group)
+                        },
+                      },
+                      h(NewChatIcon, {}),
+                    ),
+                  ),
             ),
             groupCollapsed
               ? null
@@ -1612,6 +1703,9 @@ window.__ModuleLoader__.load({
       const copySessionId = typeof props.copySessionId === 'function' ? props.copySessionId : null
       const openFolder = typeof props.openFolder === 'function' ? props.openFolder : null
       const openPath = typeof props.openPath === 'function' ? props.openPath : null
+      const renameWorkspace = typeof props.renameWorkspace === 'function' ? props.renameWorkspace : null
+      const deleteWorkspace = typeof props.deleteWorkspace === 'function' ? props.deleteWorkspace : null
+      const startWorkspaceSession = typeof props.startWorkspaceSession === 'function' ? props.startWorkspaceSession : null
       const stateOf = (row) => treeDotState(
         row,
         statuses !== undefined && typeof statuses.get === 'function' ? statuses.get(row.id) : undefined,
@@ -1704,6 +1798,55 @@ window.__ModuleLoader__.load({
           ],
         })
       }
+      const openGroupActions = (group, x, y) => {
+        if (group.key === '') return
+        const rows = [
+          {
+            key: 'rename-workspace',
+            label: t('tree.workspaceRename'),
+            icon: h(EditIcon, {}),
+            onSelect: () => treeRenameStore.set({ kind: 'workspace', id: group.key, title: group.title }),
+          },
+          {
+            key: 'delete-workspace',
+            label: t('tree.workspaceDelete'),
+            icon: h(TrashIcon, {}),
+            danger: true,
+            onSelect: () => {
+              menuStore.set({
+                x: Math.max(16, Math.round(window.innerWidth / 2 - 120)),
+                y: Math.max(16, Math.round(window.innerHeight / 2 - 80)),
+                title: t('tree.workspaceDelete.title'),
+                rows: () => [
+                  {
+                    key: 'delete',
+                    label: t('tree.workspaceDelete.confirm'),
+                    icon: h(TrashIcon, {}),
+                    danger: true,
+                    onSelect: () => {
+                      if (deleteWorkspace === null) return
+                      Promise.resolve(deleteWorkspace(group.key)).then(
+                        () => notify(t('tree.notice.workspaceDeleted'), 'success'),
+                        () => notify(t('tree.notice.failed'), 'error'),
+                      )
+                    },
+                  },
+                  {
+                    key: 'cancel',
+                    label: t('tree.workspaceDelete.cancel'),
+                    onSelect: () => {},
+                  },
+                ],
+              })
+            },
+          },
+        ]
+        menuStore.set({ x, y, title: group.title, rows: () => rows })
+      }
+      const createWorkspaceSession = (group) => {
+        if (startWorkspaceSession === null || group.key === '') return
+        Promise.resolve(startWorkspaceSession(group.key)).catch(() => notify(t('tree.notice.failed'), 'error'))
+      }
       const openRowMenu = (row, x, y) => {
         const isPinned = pinned.has(row.id)
         const mac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.platform || '')
@@ -1720,7 +1863,7 @@ window.__ModuleLoader__.load({
             label: t('tree.rename'),
             icon: h(EditIcon, {}),
             shortcut: mod + '+Alt+G',
-            onSelect: () => treeRenameStore.set({ sessionId: row.id, title: treeTitle(row, t) }),
+            onSelect: () => treeRenameStore.set({ kind: 'session', id: row.id, title: treeTitle(row, t) }),
           },
           {
             key: 'fork',
@@ -1877,6 +2020,8 @@ window.__ModuleLoader__.load({
                   onArchive: archiveRow,
                   onMenu: openRowMenu,
                   onGroupMenu: openGroupMenu,
+                  onGroupActions: openGroupActions,
+                  onNewSession: createWorkspaceSession,
                   drag,
                   t,
                 }),
@@ -1885,9 +2030,11 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * Rename dialog for a tree row. The menu closes before this surface opens;
-     * the request carries the Session id and current title.
-     * @param props.renameSession - injected Host rename operation.
+     * Rename dialog shared by a tree Session row and a Workspace group header.
+     * The request carries `{ kind, id, title }`; the menu closes before this
+     * surface opens.
+     * @param props.renameSession - injected Host Session rename operation.
+     * @param props.renameWorkspace - injected Host Workspace rename operation.
      * @param props.t - bound locale translate.
      * @returns the dialog, or null while closed.
      */
@@ -1898,6 +2045,8 @@ window.__ModuleLoader__.load({
       const [error, setError] = React.useState(null)
       const inputRef = React.useRef(null)
       const t = typeof props.t === 'function' ? props.t : (key) => key
+      const isWorkspace = request !== null && request.kind === 'workspace'
+      const rename = isWorkspace ? props.renameWorkspace : props.renameSession
       React.useEffect(() => {
         if (request === null) return undefined
         setDraft(request.title === undefined || request.title === null ? '' : request.title)
@@ -1923,11 +2072,11 @@ window.__ModuleLoader__.load({
         }
         setBusy(true)
         setError(null)
-        Promise.resolve(props.renameSession(request.sessionId, title)).then(
+        Promise.resolve(rename(request.id, title)).then(
           () => treeRenameStore.set(null),
           () => {
             setBusy(false)
-            setError(t('tree.rename.failed'))
+            setError(t(isWorkspace ? 'tree.notice.workspaceRenameFailed' : 'tree.rename.failed'))
           },
         )
       }
@@ -1948,8 +2097,8 @@ window.__ModuleLoader__.load({
         },
         h(
           'div',
-          { className: 'dsf-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('tree.rename.title') },
-          h('div', { className: 'dsf-dialog-title' }, t('tree.rename.title')),
+          { className: 'dsf-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t(isWorkspace ? 'tree.rename.workspaceTitle' : 'tree.rename.title') },
+          h('div', { className: 'dsf-dialog-title' }, t(isWorkspace ? 'tree.rename.workspaceTitle' : 'tree.rename.title')),
           h('input', {
             ref: inputRef,
             className: 'dsf-dialog-input',
@@ -1999,7 +2148,7 @@ window.__ModuleLoader__.load({
     }
 
     /** Services the browser half reads: Session summaries, slots, copy, Remote. */
-    const inject = ['sessions', 'slots', 'locale', 'remote', 'remote.session', 'uiWorkspace']
+    const inject = ['sessions', 'slots', 'locale', 'remote', 'remote.session', 'uiWorkspace', 'workspaces']
 
     /**
      * Client plugin body.
@@ -2458,6 +2607,12 @@ window.__ModuleLoader__.load({
                   throw new Error(result.error === undefined ? 'rename failed' : result.error.message)
                 }
               },
+              renameWorkspace: async (workspaceId, title) => {
+                const result = await ctx.workspaces.rename(workspaceId, title)
+                if (result !== undefined && result !== null && result.ok === false) {
+                  throw new Error(result.error === undefined ? 'workspace rename failed' : result.error.message)
+                }
+              },
             }),
           },
           SessionRenameDialog,
@@ -2480,6 +2635,14 @@ window.__ModuleLoader__.load({
               copySessionId: (sessionId) => copyText(sessionId, t('tree.notice.sessionIdCopied')),
               openFolder: (sessionId) => openFolder(sessionId),
               openPath: (path) => openOnHost({ path }),
+              renameWorkspace: async (workspaceId, title) => {
+                const result = await ctx.workspaces.rename(workspaceId, title)
+                if (result !== undefined && result !== null && result.ok === false) {
+                  throw new Error(result.error === undefined ? 'workspace rename failed' : result.error.message)
+                }
+              },
+              deleteWorkspace: (workspaceId) => ctx.workspaces.delete(workspaceId),
+              startWorkspaceSession: (workspaceId) => ctx.uiWorkspace.startSession(workspaceId),
               notify,
             }),
           },

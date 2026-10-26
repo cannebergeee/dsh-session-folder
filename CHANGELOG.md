@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.6 — 2026-10-26
+
+- **Workspace group headers in the fork tree now carry the host Workspace row's two hover actions**:
+  - `…` — rename workspace / delete workspace (delete asks for confirmation and calls the Host delete operation);
+  - `＋` — start a new Session in that Workspace (the host's “New session” action).
+- Rename uses the same plugin dialog as Session rename, now generalized to workspace renames; both call the public
+  `workspaces.rename` / `session.rename` services. No host source change.
+
 ## 1.9.5 — 2026-10-26
 
 - Fixed the tree row context menu intermittently closing while a long Session title was marquee-scrolling: menus
