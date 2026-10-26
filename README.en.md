@@ -4,7 +4,8 @@
 > **right-click a Session row** to open its project folder, **right-click a file name in the conversation**
 > to open it, reveal it in the file manager, or copy its absolute / relative path,
 > **right-click an http(s) link** to open it in the default browser or copy it, and **right-click a workspace
-> row** to open that workspace's directory.
+> row** to open that workspace's directory. There is also a **fork-tree view** that browses Sessions by fork
+> lineage in the sidebar.
 
 中文说明: [README.md](README.md)
 
@@ -79,6 +80,36 @@ only when those props are unavailable does the plugin fall back to a label that 
 > root-scope workspace snapshot (mirrored through `useWorkspaces` into an id → directory map), so renames,
 > additions, and deletions are followed automatically.
 
+### 5. Fork-tree view: Sessions by fork lineage
+
+The **⑂ icon at the right of the sidebar's “Workspaces” header row** (icon only; it does not take host
+layout space), or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers the sidebar's
+workspace browser:
+
+- **Entry**: a 26/28px **⑂ icon** in the sidebar's “Workspaces” header row (no host layout space). Its position is
+  measured from the host icon cluster — 8px to its left and vertically centered — and it **hides while the host
+  search box is expanded** so it never lands inside the search field. The Session `…` menu's “Fork tree view”
+  also opens it.
+- **Title style**: the panel title reuses the host “Workspaces” `sectionLabel` style (14px / 400 /
+  `--dsw-alias-label-tertiary`, line-height 20px) with no extra hint copy; the top-right control is a **folder
+  icon** (closes back to the list).
+- **Grouped by workspace**, Sessions nest by fork lineage: a parent row is followed by its forked children,
+  indented with guide lines; deeper forks keep nesting.
+- **Collapse**: rows with children get a chevron; groups collapse as a whole. Collapse state is stored in
+  `localStorage` (`dsh-session-folder.fork-tree.collapsed.v1`) and survives reloads.
+- **Status**: each row's leading cell matches the host's own `StateDot` — **ongoing** is a 14px rotating ring
+  (faint track plus a breathing arc), warning is an amber dot, unread completion green, idle neutral. The
+  state comes from `useSessionStatus` and updates live, not from a static icon.
+- **Filter**: the header input filters by title and keeps the matching node's ancestors visible.
+- **Open**: clicking any node opens that Session in the main column through `ctx.uiWorkspace.openSession`;
+  the tree stays open for continuous browsing.
+- **Close**: the header **folder icon**, `Esc`, or the ⑂ icon in the Workspaces header again — the host list returns.
+
+> This is a **separate tree view**, not a restyle of host rows: host Session rows expose no row-content,
+> ordering, or collapse seat, so the default list stays sorted by “Last updated”. The view only replaces the
+> **workspace browsing region**; the brand/new-session area above and the sidebar foot stay usable. While it is
+> open the host's search/grouping is covered; closing restores it.
+
 ---
 
 ## Install
@@ -143,13 +174,22 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
   `--dsw-menu-backdrop-filter` translucent material, `--dsw-elevation-prominent`, `--dsw-radius-lg`,
   `--dsw-alias-menu-icon`, `--dsw-alias-toast-bg`, `--dsw-shadow-lv3` …), so it follows light and dark themes.
   No `dsh-client-ui-primitives` import; the rows are this plugin's own `role="menuitem"` buttons.
+- **Fork tree**: data comes from the root-scope `useSessions` / `useWorkspaces` / `useSessionStatus` standard
+  props (`SessionListState.byId[id].parentId`, the workspace snapshot's `items` / `archivedSessionIds`, and the
+  live status map); the plugin assembles the parent/child forest itself. The panel is a `shell.overlay` entry
+  positioned with `position: fixed` over `[data-slot="sidebar.workspaces"]`; the closed-state entry point is a
+  26px icon button the same overlay paints over the host's “Workspaces” header row (the host exposes no header
+  slot). Its position is measured from the host icon cluster's left edge and placed 8px to its left, so it never
+  overlaps the search/sort/add buttons; both states follow the sidebar through `ResizeObserver`. It styles only
+  with `--dsw-*` tokens; opening a Session reuses the host's `ctx.uiWorkspace.openSession` (the same call the
+  official chat package makes) instead of navigating itself.
 
 ---
 
 ## Compatibility
 
-- DSH `0.2.1-rc` line (needs the `sidebar.workspaces.session.menu.item` slot and the
-  `session.openWorkspacePath` Remote).
+- DSH `0.2.1-rc` line (needs the `sidebar.workspaces.session.menu.item` / `shell.overlay` slots, the
+  `session.openWorkspacePath` Remote, and the `ctx.sessions` / `ctx.uiWorkspace` services).
 - Requires a deployment that can hand paths to a local desktop (DSH Desktop, or a locally run Web build);
   open actions fail with a notice otherwise.
 - Model-neutral: a browser UI plugin with no tools and no session writes.
@@ -161,13 +201,19 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 - **The file chip's path source is a host implementation detail**: if a future DSH release stops putting the
   path in `title`, the file right-click goes silent. The Session right-click and the `…` menu row are unaffected.
 - A blank “New session” row has no action seat, so right-clicking it does nothing.
+- **The fork tree is a separate view**: it covers the sidebar's workspace browser while open (host search and
+  grouping are temporarily hidden) and restores it on close; it does not turn host rows into a collapsible
+  tree. It shows ordinary Sessions only (subagent, blank, and archived rows are omitted), sorted by `updatedAt`,
+  without pin/archive badges. The closed-state entry is an overlay icon painted over the host's “Workspaces”
+  header row (the host offers no header slot), so a host layout change may require re-checking its position; the
+  open state is not persisted (closed after a restart), while the collapse state is.
 
 ## Layout
 
 | File | Role |
 |---|---|
 | `index.js` | Host half: an empty `apply`, only carrying the `dsh.client` Loader row |
-| `client.js` | Browser half: Session menu row, file context menu, notices |
+| `client.js` | Browser half: Session menu row, file context menu, notices, fork-tree view |
 | `cordis.patch.yml` | Inserts the `session-folder` row |
 | `locale/{en,zh}.json` | Title/description shown in the Plugins panel |
 | `icon.svg` | Plugin icon |

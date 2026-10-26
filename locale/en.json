@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Right-click Enhancements",
-    "description": "Right-click a Session row for its own menu (including Open in File Explorer); right-click a conversation file name to open it, reveal it, or copy its absolute/relative path; right-click a web link to open it in the default browser or copy it."
+    "description": "Right-click a Session row for its own menu (including Open in File Explorer); right-click a conversation file name to open it, reveal it, or copy its absolute/relative path; right-click a web link to open it in the default browser or copy it; use the fork-tree button in the sidebar foot to browse Sessions by fork lineage."
   }
 }

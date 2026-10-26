@@ -57,6 +57,16 @@ window.__ModuleLoader__.load({
       'notice.openLinkFailed': '无法打开链接，请重试',
       'workspace.title': '工作区操作',
       'folder.title': '文件夹操作',
+      'tree.toggle': '切换分叉树视图',
+      'tree.title': '分叉树',
+      'tree.filter': '筛选会话…',
+      'tree.close': '返回会话列表',
+      'tree.menu': '分叉树视图',
+      'tree.untitled': '未命名会话',
+      'tree.ungrouped': '未分组',
+      'tree.noSessions': '没有可显示的会话',
+      'tree.noMatches': '没有匹配的会话',
+      'tree.toggleNode': '展开或折叠分叉',
     }
     const en = {
       'menu.open': 'Open in File Explorer',
@@ -78,6 +88,16 @@ window.__ModuleLoader__.load({
       'notice.openLinkFailed': 'Could not open the link. Please try again.',
       'workspace.title': 'Workspace actions',
       'folder.title': 'Folder actions',
+      'tree.toggle': 'Toggle fork tree view',
+      'tree.title': 'Fork tree',
+      'tree.filter': 'Filter sessions…',
+      'tree.close': 'Back to the session list',
+      'tree.menu': 'Fork tree view',
+      'tree.untitled': 'Untitled session',
+      'tree.ungrouped': 'Ungrouped',
+      'tree.noSessions': 'No sessions to show',
+      'tree.noMatches': 'No matching sessions',
+      'tree.toggleNode': 'Expand or collapse branches',
     }
 
     /**
@@ -101,6 +121,61 @@ window.__ModuleLoader__.load({
       '.dsf-notice[data-tone=success] .dsf-notice-dot{background:var(--dsw-alias-state-success-primary)}',
       '@keyframes dsf-notice-in{from{opacity:0;transform:translate(-50%,-6px)}to{opacity:1;transform:translate(-50%)}}',
       '@media (prefers-reduced-motion:reduce){.dsf-notice{animation:none}}',
+      /* Fork-tree view: a header-icon launcher + the panel that replaces the sidebar browser. */
+      '.dsf-tree-launcher{position:fixed;z-index:6;box-sizing:border-box;width:28px;height:28px;padding:0;border:0;border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto}',
+      '.dsf-tree-launcher:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
+      '.dsf-tree-launcher:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
+      '.dsf-tree-panel{position:fixed;z-index:5;box-sizing:border-box;display:flex;flex-direction:column;min-height:0;overflow:hidden;background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary);pointer-events:auto;font-family:inherit}',
+      '.dsf-tree-head{flex:none;display:flex;align-items:center;gap:4px;height:36px;margin-bottom:4px;margin-top:2px;padding:0 4px}',
+      '.dsf-tree-heading{flex:1;min-width:0;display:flex;align-items:center}',
+      '.dsf-tree-heading-title{font-size:14px;font-weight:400;line-height:20px;color:var(--dsw-alias-label-tertiary,var(--dsw-alias-label-secondary));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.dsf-tree-close{flex:none;width:28px;height:28px;padding:0;border:0;border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}',
+      '.dsf-tree-close:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
+      '.dsf-tree-close svg{width:15px;height:15px}',
+      '.dsf-tree-search{flex:none;display:flex;align-items:center;gap:6px;height:30px;margin:2px 8px 8px;padding:0 9px;border:1px solid var(--dsw-alias-border-l1);border-radius:8px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-secondary)}',
+      '.dsf-tree-search>svg{flex:none}',
+      '.dsf-tree-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12.5px}',
+      '.dsf-tree-search input::placeholder{color:var(--dsw-alias-label-secondary);opacity:.8}',
+      '.dsf-tree-scroll{flex:1;min-height:0;overflow-y:auto;padding:0 8px 10px;scrollbar-width:thin}',
+      '.dsf-tree-scroll::-webkit-scrollbar{width:8px}',
+      '.dsf-tree-scroll::-webkit-scrollbar-thumb{background:var(--dsw-alias-border-l2);border-radius:99px;border:2px solid transparent;background-clip:padding-box}',
+      '.dsf-tree-group{margin-top:6px}',
+      '.dsf-tree-group-header{display:flex;align-items:center;gap:6px;height:30px;padding:0 6px;border-radius:7px;cursor:pointer;user-select:none;outline:none}',
+      '.dsf-tree-group-header:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-tree-group-header:focus-visible{box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
+      '.dsf-tree-group-name{flex:1;min-width:0;font-size:12px;font-weight:600;color:var(--dsw-alias-label-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.dsf-tree-group-count{flex:none;font-size:10.5px;color:var(--dsw-alias-label-secondary)}',
+      '.dsf-tree-group-body{padding-left:2px}',
+      '.dsf-tree-node{min-width:0}',
+      '.dsf-tree-children{margin-left:14px;padding-left:4px;border-left:1px solid var(--dsw-alias-border-l2)}',
+      '.dsf-tree-children>.dsf-tree-node>.dsf-tree-row::before{content:"";position:absolute;left:-5px;top:15px;width:5px;border-top:1px solid var(--dsw-alias-border-l2)}',
+      '.dsf-tree-row{position:relative;display:flex;align-items:center;height:30px;padding:0 7px;border-radius:7px;cursor:pointer;user-select:none;outline:none}',
+      '.dsf-tree-row:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-tree-row:focus-visible{box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
+      '.dsf-tree-row.is-current{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-tree-twisty{flex:none;width:16px;height:16px;padding:0;border:0;border-radius:4px;background:transparent;color:var(--dsw-alias-label-secondary);display:grid;place-items:center;cursor:pointer}',
+      '.dsf-tree-twisty.is-spacer{visibility:hidden;cursor:default}',
+      '.dsf-tree-twisty:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
+      '.dsf-tree-chev{width:5px;height:5px;border-right:1.4px solid currentColor;border-bottom:1.4px solid currentColor;transform:rotate(45deg);margin-top:-2px;transition:transform .12s ease}',
+      '.dsf-tree-twisty.is-collapsed .dsf-tree-chev{transform:rotate(-45deg);margin-top:0;margin-left:-2px}',
+      '.dsf-tree-state-slot{position:relative;top:1px;width:16px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex:none;margin-left:2px}',
+      '.dsf-tree-spinner{flex:none;color:var(--dsw-alias-label-tertiary,var(--dsw-alias-label-secondary))}',
+      '.dsf-tree-spinner-motion{transform-origin:center;animation:dsf-tree-spin 1.5s linear infinite}',
+      '.dsf-tree-spinner-track,.dsf-tree-spinner-arc{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}',
+      '.dsf-tree-spinner-track{opacity:.25}',
+      '.dsf-tree-spinner-arc{stroke-dasharray:12 150;animation:dsf-tree-dash 1.5s ease-in-out infinite}',
+      '@keyframes dsf-tree-spin{to{transform:rotate(360deg)}}',
+      '@keyframes dsf-tree-dash{0%{stroke-dasharray:12 150;stroke-dashoffset:0}50%{stroke-dasharray:24 150;stroke-dashoffset:-6}100%{stroke-dasharray:12 150;stroke-dashoffset:0}}',
+      '@media (prefers-reduced-motion:reduce){.dsf-tree-spinner-motion,.dsf-tree-spinner-arc{animation:none}.dsf-tree-spinner-arc{stroke-dasharray:18 150;stroke-dashoffset:-3}}',
+      '.dsf-tree-dot{position:relative;display:inline-block;flex:none;width:10px;height:10px}',
+      '.dsf-tree-dot::after{content:"";position:absolute;inset:20%;border-radius:50%;background:currentColor}',
+      '.dsf-tree-dot[data-state=done]{color:var(--dsw-alias-state-success-primary)}',
+      '.dsf-tree-dot[data-state=warning]{color:var(--dsw-alias-state-warn-primary)}',
+      '.dsf-tree-dot[data-state=error]{color:var(--dsw-alias-state-error-primary)}',
+      '.dsf-tree-dot[data-state=idle]{color:var(--dsw-alias-state-idle-primary)}',
+      '.dsf-tree-title{flex:1;min-width:0;margin-left:4px;font-size:13px;color:var(--dsw-alias-label-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.dsf-tree-count{flex:none;margin-left:6px;padding:0 5px;height:16px;display:inline-flex;align-items:center;border-radius:5px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-size:10px}',
+      '.dsf-tree-empty{padding:26px 16px;text-align:center;font-size:12px;line-height:1.7;color:var(--dsw-alias-label-secondary)}',
     ].join('')
 
     /**
@@ -134,6 +209,10 @@ window.__ModuleLoader__.load({
     const workspacePathStore = createStore(new Map())
     /** Transient notice: `{ seq, text, tone }`. */
     const noticeStore = createStore(null)
+    /** Whether the fork-tree view covers the sidebar's workspace browser. */
+    const treeOpenStore = createStore(false)
+    /** Opens a Session in the main column; installed by `apply` (no slot injection needed). */
+    let treeOpenSession = () => {}
 
     /**
      * Subscribe one component to a store.
@@ -429,8 +508,690 @@ window.__ModuleLoader__.load({
       return null
     }
 
+    /* ------------------------------------------------------------------ *
+     * Fork-tree view (option ③): a plugin-owned tree over the sidebar's
+     * workspace browser. The host renders no row-content/ordering seat, so
+     * this surface deliberately replaces the browser region instead of
+     * restyling host rows; every node is clickable and opens its Session.
+     * ------------------------------------------------------------------ */
+
+    /** localStorage key for collapsed tree nodes. */
+    const TREE_COLLAPSED_KEY = 'dsh-session-folder.fork-tree.collapsed.v1'
+
+    /**
+     * Read the persisted collapsed node ids.
+     * @returns a Set of node ids; empty when storage is unavailable.
+     */
+    function loadTreeCollapsed() {
+      try {
+        const raw = window.localStorage.getItem(TREE_COLLAPSED_KEY)
+        if (raw === null) return new Set()
+        const parsed = JSON.parse(raw)
+        return new Set(Array.isArray(parsed) ? parsed.filter((id) => typeof id === 'string') : [])
+      } catch (error) {
+        return new Set()
+      }
+    }
+
+    /**
+     * Persist collapsed node ids.
+     * @param collapsed - node ids to store.
+     */
+    function saveTreeCollapsed(collapsed) {
+      try {
+        window.localStorage.setItem(TREE_COLLAPSED_KEY, JSON.stringify([...collapsed]))
+      } catch (error) {
+        // Storage is best-effort; the tree stays usable without it.
+      }
+    }
+
+    /**
+     * Fork glyph for the footer action, menu row, and panel header.
+     * @param props.size - square edge in pixels.
+     * @returns the icon.
+     */
+    function BranchIcon(props) {
+      const size = props !== null && props !== undefined && props.size !== undefined ? props.size : 14
+      return h(
+        Icon,
+        { size },
+        h('circle', { key: 'a', cx: 8, cy: 2.8, r: 1.35, fill: 'currentColor', stroke: 'none' }),
+        h('circle', { key: 'b', cx: 4.1, cy: 13, r: 1.35, fill: 'currentColor', stroke: 'none' }),
+        h('circle', { key: 'c', cx: 11.9, cy: 13, r: 1.35, fill: 'currentColor', stroke: 'none' }),
+        h('path', { key: 'lines', d: 'M8 4.2v2.3M4.1 11.6V6.5h7.8v5.1' }),
+      )
+    }
+
+    /**
+     * Search glyph for the tree filter.
+     * @returns the icon.
+     */
+    function SearchIcon() {
+      return h(
+        Icon,
+        {},
+        h('circle', { key: 'lens', cx: 7.2, cy: 7.2, r: 4.1 }),
+        h('path', { key: 'handle', d: 'm10.4 10.4 2.8 2.8' }),
+      )
+    }
+
+    /**
+     * Display title of one Session-list row.
+     * @param row - row from `SessionListState.byId`.
+     * @param t - bound locale translate.
+     * @returns the title shown in the tree.
+     */
+    function treeTitle(row, t) {
+      const title = row.displayTitle !== undefined ? row.displayTitle : row.title
+      if (typeof title === 'string' && title.trim() !== '') return title
+      return t('tree.untitled')
+    }
+
+    /**
+     * Whether one Session-list row belongs in the fork tree.
+     * @param row - row from `SessionListState.byId`.
+     * @param archived - archive id set from the workspace snapshot.
+     * @returns true for ordinary, visible Sessions.
+     */
+    function treeVisible(row, archived) {
+      if (row === null || row === undefined) return false
+      if (row.blank === true) return false
+      if (row.origin === 'subagent') return false
+      if (archived.has(row.id)) return false
+      return true
+    }
+
+    /**
+     * Build the Workspace-grouped fork forest.
+     * @param sessions - Session-list snapshot.
+     * @param workspaces - Workspace snapshot.
+     * @param ungroupedLabel - localized label for Sessions outside every Workspace.
+     * @returns groups with root and child lists; empty groups are dropped.
+     */
+    function buildForest(sessions, workspaces, ungroupedLabel) {
+      const rows = sessions !== null && sessions !== undefined && sessions.byId !== undefined ? sessions.byId : {}
+      const items = workspaces !== null && workspaces !== undefined && Array.isArray(workspaces.items) ? workspaces.items : []
+      const archived = new Set(
+        workspaces !== null && workspaces !== undefined && Array.isArray(workspaces.archivedSessionIds)
+          ? workspaces.archivedSessionIds
+          : [],
+      )
+      const makeGroup = (key, title, members) => {
+        const byId = new Map(members.map((row) => [row.id, row]))
+        const children = new Map()
+        const roots = []
+        for (const row of members) {
+          const parentId = row.parentId
+          if (typeof parentId === 'string' && parentId !== row.id && byId.has(parentId)) {
+            const kids = children.get(parentId)
+            if (kids === undefined) children.set(parentId, [row])
+            else kids.push(row)
+          } else {
+            roots.push(row)
+          }
+        }
+        const newestFirst = (left, right) => (right.updatedAt || 0) - (left.updatedAt || 0)
+        roots.sort(newestFirst)
+        for (const kids of children.values()) kids.sort(newestFirst)
+        return { key, title, roots, children, total: members.length }
+      }
+      const groups = []
+      const accounted = new Set()
+      for (const workspace of items) {
+        const ids = Array.isArray(workspace.sessionIds) ? workspace.sessionIds : []
+        const members = []
+        for (const id of ids) {
+          const row = rows[id]
+          if (row === undefined) continue
+          accounted.add(id)
+          if (treeVisible(row, archived)) members.push(row)
+        }
+        groups.push(makeGroup(workspace.workspaceId, workspace.title || workspace.path || '', members))
+      }
+      const strays = Object.values(rows).filter(
+        (row) => row !== undefined && row !== null && !accounted.has(row.id) && treeVisible(row, archived),
+      )
+      if (strays.length > 0) groups.push(makeGroup('', ungroupedLabel, strays))
+      return groups.filter((group) => group.total > 0)
+    }
+
+    /**
+     * The Session currently shown in the main column.
+     * @param sessions - Session-list snapshot.
+     * @returns its id, or undefined while no Session is retained by the main view.
+     */
+    function currentTreeSessionId(sessions) {
+      if (sessions === null || sessions === undefined || sessions.byId === undefined) return undefined
+      const rows = sessions.byId
+      for (const id of Object.keys(rows)) {
+        const row = rows[id]
+        const retained = row !== null && row !== undefined ? row.retainedBy : undefined
+        if (retained !== null && retained !== undefined && (retained.mainView || 0) > 0) return id
+      }
+      return undefined
+    }
+
+    /**
+     * Ids visible under a title filter: matches plus their ancestors.
+     * @param groups - derived forest groups.
+     * @param query - raw filter input.
+     * @returns the visible id set, or null when the filter is empty.
+     */
+    function collectVisibleTreeIds(groups, query) {
+      const needle = query.trim().toLowerCase()
+      if (needle === '') return null
+      const visible = new Set()
+      const visit = (group, row) => {
+        let matched = treeTitle(row, () => '').toLowerCase().includes(needle)
+        for (const kid of group.children.get(row.id) || []) {
+          if (visit(group, kid)) matched = true
+        }
+        if (matched) visible.add(row.id)
+        return matched
+      }
+      for (const group of groups) for (const root of group.roots) visit(group, root)
+      return visible
+    }
+
+    /**
+     * Session state dot copied from the host's `StateDot`: a breathing/rotating
+     * ring for ongoing work, a 6px core for every settled state.
+     * @param props.state - `ongoing`, `warning`, `done`, `error`, or `idle`.
+     * @returns the dot.
+     */
+    function TreeStateDot(props) {
+      if (props.state === 'ongoing') {
+        return h(
+          'svg',
+          {
+            className: 'dsf-tree-spinner',
+            viewBox: '0 0 24 24',
+            width: 14,
+            height: 14,
+            'aria-hidden': true,
+            focusable: 'false',
+          },
+          h(
+            'g',
+            { key: 'motion', className: 'dsf-tree-spinner-motion' },
+            h('circle', { key: 'track', className: 'dsf-tree-spinner-track', cx: 12, cy: 12, r: 9.5 }),
+            h('circle', { key: 'arc', className: 'dsf-tree-spinner-arc', cx: 12, cy: 12, r: 9.5 }),
+          ),
+        )
+      }
+      return h('span', { className: 'dsf-tree-dot', 'data-state': props.state, 'aria-hidden': true })
+    }
+
+    /**
+     * Count running direct subagent children exactly like the host row.
+     * @param sessions - Session-list snapshot.
+     * @param statuses - live status map, when available.
+     * @param parentId - parent Session id.
+     * @returns the number of running direct subagents.
+     */
+    function runningTreeChildren(sessions, statuses, parentId) {
+      if (sessions === null || sessions === undefined || sessions.projectionsBySession === undefined) return 0
+      const projection = sessions.projectionsBySession[parentId]
+      const catalog = projection !== null && projection !== undefined && projection.values !== undefined ? projection.values.subagentCatalog : undefined
+      if (!Array.isArray(catalog)) return 0
+      let count = 0
+      for (const child of catalog) {
+        const status = statuses !== undefined && typeof statuses.get === 'function' ? statuses.get(child.id) : undefined
+        const running = status !== undefined && status !== null && status.running !== undefined
+          ? status.running === true
+          : sessions.byId !== undefined && sessions.byId[child.id] !== undefined && sessions.byId[child.id].running === true
+        if (running) count += 1
+      }
+      return count
+    }
+
+    /**
+     * Resolve one row's primary status exactly like the host row: pending
+     * interaction is primary, live activity (including running subagents)
+     * outranks completion reminders.
+     * @param row - Session-list row.
+     * @param status - live `SessionStatusSnapshot` for the row, when present.
+     * @param runningChildren - running direct subagent count.
+     * @returns the `StateDot` state.
+     */
+    function treeDotState(row, status, runningChildren) {
+      if (status !== null && status !== undefined) {
+        if (status.pendingInteraction !== undefined && status.pendingInteraction !== null) return 'warning'
+        if (status.running === true || runningChildren > 0) return 'ongoing'
+        if (status.completionUnread === true) return 'done'
+        return 'idle'
+      }
+      return row.running === true || runningChildren > 0 ? 'ongoing' : 'idle'
+    }
+
+    /**
+     * Recursive tree rows for one Workspace group.
+     * @param props.group - derived group.
+     * @param props.roots - rows to render at this level.
+     * @param props.level - ARIA level of this level's rows.
+     * @param props.visible - filtered id set, or null when unfiltered.
+     * @param props.collapsed - collapsed node ids.
+     * @param props.currentId - selected Session id.
+     * @param props.stateOf - resolves one row's `StateDot` state.
+     * @param props.onToggle - collapse toggle callback.
+     * @param props.onOpen - open-Session callback.
+     * @param props.t - bound locale translate.
+     * @returns the tree rows.
+     */
+    function TreeNodes(props) {
+      const { group, roots, level, visible, collapsed, currentId, stateOf, onToggle, onOpen, t } = props
+      return roots.map((row) => {
+        const children = group.children.get(row.id) || []
+        const shownChildren = visible === null ? children : children.filter((child) => visible.has(child.id))
+        const isCollapsed = visible === null && collapsed.has(row.id)
+        const expanded = shownChildren.length > 0 && !isCollapsed
+        return h(
+          'div',
+          { key: row.id, className: 'dsf-tree-node' },
+          h(
+            'div',
+            {
+              className: 'dsf-tree-row' + (row.id === currentId ? ' is-current' : ''),
+              role: 'treeitem',
+              'aria-level': level,
+              'aria-expanded': shownChildren.length > 0 ? String(expanded) : undefined,
+              'aria-selected': row.id === currentId,
+              tabIndex: 0,
+              onClick: () => onOpen(row.id),
+              onKeyDown: (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  onOpen(row.id)
+                } else if (event.key === 'ArrowRight' && shownChildren.length > 0 && isCollapsed) {
+                  event.preventDefault()
+                  onToggle(row.id)
+                } else if (event.key === 'ArrowLeft' && shownChildren.length > 0 && !isCollapsed) {
+                  event.preventDefault()
+                  onToggle(row.id)
+                }
+              },
+            },
+            shownChildren.length > 0
+              ? h(
+                  'button',
+                  {
+                    key: 'twisty',
+                    type: 'button',
+                    className: 'dsf-tree-twisty' + (isCollapsed ? ' is-collapsed' : ''),
+                    'aria-label': t('tree.toggleNode'),
+                    onClick: (event) => {
+                      event.stopPropagation()
+                      onToggle(row.id)
+                    },
+                  },
+                  h('span', { key: 'chev', className: 'dsf-tree-chev' }),
+                )
+              : h('span', { key: 'twisty', className: 'dsf-tree-twisty is-spacer' }),
+            h('span', { key: 'state', className: 'dsf-tree-state-slot' }, h(TreeStateDot, { state: stateOf(row) })),
+            h('span', { key: 'title', className: 'dsf-tree-title' }, treeTitle(row, t)),
+            shownChildren.length > 0
+              ? h('span', { key: 'count', className: 'dsf-tree-count' }, String(shownChildren.length))
+              : null,
+          ),
+          expanded
+            ? h(
+                'div',
+                { key: 'children', className: 'dsf-tree-children', role: 'group' },
+                h(TreeNodes, {
+                  group,
+                  roots: shownChildren,
+                  level: level + 1,
+                  visible,
+                  collapsed,
+                  currentId,
+                  stateOf,
+                  onToggle,
+                  onOpen,
+                  t,
+                }),
+              )
+            : null,
+        )
+      })
+    }
+
+    /**
+     * Workspace-grouped tree body.
+     * @param props.groups - derived forest groups.
+     * @param props.visible - filtered id set, or null.
+     * @param props.collapsed - collapsed node ids.
+     * @param props.currentId - selected Session id.
+     * @param props.stateOf - resolves one row's `StateDot` state.
+     * @param props.onToggle - collapse toggle callback.
+     * @param props.onOpen - open-Session callback.
+     * @param props.t - bound locale translate.
+     * @returns the group rows.
+     */
+    function TreeGroups(props) {
+      const { groups, visible, collapsed, currentId, stateOf, onToggle, onOpen, t } = props
+      const rendered = []
+      for (const group of groups) {
+        const groupKey = 'ws:' + group.key
+        const roots = visible === null ? group.roots : group.roots.filter((row) => visible.has(row.id))
+        if (visible !== null && roots.length === 0) continue
+        const groupCollapsed = visible === null && collapsed.has(groupKey)
+        rendered.push(
+          h(
+            'div',
+            { key: groupKey, className: 'dsf-tree-group' },
+            h(
+              'div',
+              {
+                className: 'dsf-tree-group-header',
+                role: 'treeitem',
+                'aria-level': 1,
+                'aria-expanded': String(!groupCollapsed),
+                tabIndex: 0,
+                onClick: () => onToggle(groupKey),
+                onKeyDown: (event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onToggle(groupKey)
+                  }
+                },
+              },
+              h(
+                'span',
+                {
+                  key: 'twisty',
+                  className: 'dsf-tree-twisty' + (groupCollapsed ? ' is-collapsed' : ''),
+                  'aria-hidden': true,
+                },
+                h('span', { key: 'chev', className: 'dsf-tree-chev' }),
+              ),
+              h('span', { key: 'name', className: 'dsf-tree-group-name' }, group.title),
+              h('span', { key: 'count', className: 'dsf-tree-group-count' }, String(group.total)),
+            ),
+            groupCollapsed
+              ? null
+              : h(
+                  'div',
+                  { key: 'body', className: 'dsf-tree-group-body' },
+                  roots.length === 0
+                    ? h('div', { key: 'empty', className: 'dsf-tree-empty' }, t('tree.noSessions'))
+                    : h(TreeNodes, {
+                        group,
+                        roots,
+                        level: 2,
+                        visible,
+                        collapsed,
+                        currentId,
+                        stateOf,
+                        onToggle,
+                        onOpen,
+                        t,
+                      }),
+                ),
+          ),
+        )
+      }
+      return rendered
+    }
+
+    /**
+     * Track the sidebar workspace region while the tree is open or closed.
+     * Also measures the host header's icon cluster so the closed-state launcher
+     * can sit left of those buttons instead of at a fixed offset.
+     * @param active - whether measurement is needed.
+     * @returns the region rect plus the header icons' left edge, or null.
+     */
+    function useSidebarRegion(active) {
+      const [rect, setRect] = React.useState(null)
+      React.useEffect(() => {
+        if (!active) {
+          setRect(null)
+          return undefined
+        }
+        let frame = 0
+        let attempts = 0
+        const schedule = () => {
+          if (frame === 0) frame = window.requestAnimationFrame(measure)
+        }
+        const measure = () => {
+          frame = 0
+          let element = null
+          const anchor = document.querySelector('[data-slot="sidebar.workspaces"]')
+          if (anchor !== null) element = anchor.firstElementChild
+          if (!(element instanceof HTMLElement)) {
+            const fallback = document.querySelector('[data-slot="sidebar"]')
+            if (fallback !== null) element = fallback.firstElementChild
+          }
+          if (!(element instanceof HTMLElement)) {
+            if (attempts < 60) {
+              attempts += 1
+              schedule()
+            }
+            return
+          }
+          const bounds = element.getBoundingClientRect()
+          if (bounds.width < 160 || bounds.height < 120) {
+            setRect(null)
+            return
+          }
+          let headerLeft = null
+          let headerCenterY = null
+          let minLeft = Number.POSITIVE_INFINITY
+          let centerSum = 0
+          let centerCount = 0
+          for (const button of element.querySelectorAll('button')) {
+            if (!(button instanceof HTMLElement)) continue
+            const box = button.getBoundingClientRect()
+            if (box.width < 1 || box.height < 1) continue
+            if (box.top < bounds.top - 1 || box.top > bounds.top + 48) continue
+            if (box.right > bounds.right + 1) continue
+            if (box.left < minLeft) minLeft = box.left
+            centerSum += box.top + box.height / 2
+            centerCount += 1
+          }
+          if (Number.isFinite(minLeft)) headerLeft = minLeft
+          if (centerCount > 0) headerCenterY = centerSum / centerCount
+          let searchOpen = false
+          for (const input of element.querySelectorAll('input')) {
+            if (!(input instanceof HTMLElement)) continue
+            const box = input.getBoundingClientRect()
+            if (box.width < 20 || box.height < 1) continue
+            if (box.top < bounds.top - 1 || box.top > bounds.top + 48) continue
+            searchOpen = true
+            break
+          }
+          const next = { left: bounds.left, top: bounds.top, width: bounds.width, height: bounds.height, headerLeft, headerCenterY, searchOpen }
+          const sameNumber = (a, b) => a === b || (typeof a === 'number' && typeof b === 'number' && Math.abs(a - b) < 0.5)
+          setRect((previous) => {
+            if (previous === null) return next
+            return Math.abs(previous.left - next.left) < 0.5 &&
+              Math.abs(previous.top - next.top) < 0.5 &&
+              Math.abs(previous.width - next.width) < 0.5 &&
+              Math.abs(previous.height - next.height) < 0.5 &&
+              sameNumber(previous.headerLeft, next.headerLeft) &&
+              sameNumber(previous.headerCenterY, next.headerCenterY) &&
+              previous.searchOpen === next.searchOpen
+              ? previous
+              : next
+          })
+        }
+        schedule()
+        const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(schedule) : null
+        const columnAnchor = document.querySelector('[data-slot="sidebar"]')
+        const column = columnAnchor === null ? null : columnAnchor.firstElementChild
+        if (observer !== null && column instanceof HTMLElement) observer.observe(column)
+        const regionAnchor = document.querySelector('[data-slot="sidebar.workspaces"]')
+        const region = regionAnchor === null ? null : regionAnchor.firstElementChild
+        if (observer !== null && region instanceof HTMLElement) observer.observe(region)
+        // Search open/close is a DOM swap without a size change; pointer/key/focus
+        // events schedule a re-measure after React commits.
+        document.addEventListener('focusin', schedule, true)
+        document.addEventListener('focusout', schedule, true)
+        document.addEventListener('pointerdown', schedule, true)
+        document.addEventListener('keydown', schedule, true)
+        window.addEventListener('resize', schedule)
+        return () => {
+          if (frame !== 0) window.cancelAnimationFrame(frame)
+          if (observer !== null) observer.disconnect()
+          document.removeEventListener('focusin', schedule, true)
+          document.removeEventListener('focusout', schedule, true)
+          document.removeEventListener('pointerdown', schedule, true)
+          document.removeEventListener('keydown', schedule, true)
+          window.removeEventListener('resize', schedule)
+        }
+      }, [active])
+      return rect
+    }
+
+    /**
+     * The fork-tree entry: an icon launcher in the Workspace section header
+     * while closed, and the tree panel covering the sidebar browser while open.
+     * @param props.useSessions - root Session-list selector hook.
+     * @param props.useWorkspaces - root Workspace selector hook.
+     * @param props.useSessionStatus - root live status selector hook.
+     * @param props.t - bound locale translate.
+     * @returns the launcher icon or the panel.
+     */
+    function ForkTreePanel(props) {
+      const open = useStore(treeOpenStore)
+      const sessions = typeof props.useSessions === 'function' ? props.useSessions((state) => state) : undefined
+      const workspaces = typeof props.useWorkspaces === 'function' ? props.useWorkspaces((state) => state) : undefined
+      const statuses = typeof props.useSessionStatus === 'function' ? props.useSessionStatus((state) => state) : undefined
+      const [filter, setFilter] = React.useState('')
+      const [collapsed, setCollapsed] = React.useState(loadTreeCollapsed)
+      const rect = useSidebarRegion(true)
+      const t = typeof props.t === 'function' ? props.t : (key) => key
+      React.useEffect(() => {
+        saveTreeCollapsed(collapsed)
+      }, [collapsed])
+      React.useEffect(() => {
+        if (!open) return undefined
+        const onKeyDown = (event) => {
+          if (event.key === 'Escape') {
+            event.preventDefault()
+            treeOpenStore.set(false)
+          }
+        }
+        document.addEventListener('keydown', onKeyDown, true)
+        return () => document.removeEventListener('keydown', onKeyDown, true)
+      }, [open])
+      if (rect === null) return null
+      if (!open) {
+        if (rect.searchOpen === true) return null
+        const headerLeft = typeof rect.headerLeft === 'number' ? rect.headerLeft : rect.left + rect.width - 130
+        const centerY = typeof rect.headerCenterY === 'number' ? rect.headerCenterY : rect.top + 18
+        const left = Math.max(rect.left + 8, headerLeft - 8 - 28)
+        return h(
+          'button',
+          {
+            type: 'button',
+            className: 'dsf-tree-launcher',
+            style: {
+              left: String(left) + 'px',
+              top: String(centerY - 14) + 'px',
+            },
+            'aria-label': t('tree.toggle'),
+            title: t('tree.toggle'),
+            onClick: () => treeOpenStore.set(true),
+          },
+          h(BranchIcon, { size: 15 }),
+        )
+      }
+      if (sessions === undefined || workspaces === undefined) return null
+      const groups = buildForest(sessions, workspaces, t('tree.ungrouped'))
+      const visible = filter.trim() === '' ? null : collectVisibleTreeIds(groups, filter)
+      const currentId = currentTreeSessionId(sessions)
+      const stateOf = (row) => treeDotState(
+        row,
+        statuses !== undefined && typeof statuses.get === 'function' ? statuses.get(row.id) : undefined,
+        runningTreeChildren(sessions, statuses, row.id),
+      )
+      const onOpen = (id) => treeOpenSession(id)
+      const onToggle = (id) => {
+        setCollapsed((previous) => {
+          const next = new Set(previous)
+          if (next.has(id)) next.delete(id)
+          else next.add(id)
+          return next
+        })
+      }
+      const noMatches = visible !== null && visible.size === 0
+      return h(
+        'section',
+        {
+          className: 'dsf-tree-panel',
+          style: {
+            left: String(rect.left) + 'px',
+            top: String(rect.top) + 'px',
+            width: String(rect.width) + 'px',
+            height: String(rect.height) + 'px',
+          },
+          'aria-label': t('tree.title'),
+        },
+        h(
+          'div',
+          { className: 'dsf-tree-head' },
+          h(
+            'div',
+            { className: 'dsf-tree-heading' },
+            h('span', { className: 'dsf-tree-heading-title' }, t('tree.title')),
+          ),
+          h(
+            'button',
+            {
+              type: 'button',
+              className: 'dsf-tree-close',
+              'aria-label': t('tree.close'),
+              title: t('tree.close'),
+              onClick: () => treeOpenStore.set(false),
+            },
+            h(FolderIcon, { key: 'folder' }),
+          ),
+        ),
+        h(
+          'div',
+          { className: 'dsf-tree-search' },
+          h(SearchIcon, {}),
+          h('input', {
+            value: filter,
+            placeholder: t('tree.filter'),
+            'aria-label': t('tree.filter'),
+            onChange: (event) => setFilter(event.target.value),
+          }),
+        ),
+        noMatches
+          ? h('div', { className: 'dsf-tree-empty' }, t('tree.noMatches'))
+          : groups.length === 0
+            ? h('div', { className: 'dsf-tree-empty' }, t('tree.noSessions'))
+            : h(
+                'div',
+                { className: 'dsf-tree-scroll', role: 'tree', 'aria-label': t('tree.title') },
+                h(TreeGroups, { groups, visible, collapsed, currentId, stateOf, onToggle, onOpen, t }),
+              ),
+      )
+    }
+
+    /**
+     * Session "..." menu row that opens the tree view.
+     * @param props.useMenuOpenState - injected hook returning the menu state pair.
+     * @param props.t - bound locale translate.
+     * @returns the menu row.
+     */
+    function ForkTreeMenuItem(props) {
+      const { useMenuOpenState } = props
+      const t = typeof props.t === 'function' ? props.t : (key) => key
+      const setMenuOpen = useMenuOpenState()[1]
+      return h(MenuItem, {
+        label: t('tree.menu'),
+        icon: h(BranchIcon, {}),
+        onSelect: () => {
+          setMenuOpen(false)
+          treeOpenStore.set(true)
+        },
+      })
+    }
+
     /** Services the browser half reads: Session summaries, slots, copy, Remote. */
-    const inject = ['sessions', 'slots', 'locale', 'remote', 'remote.session']
+    const inject = ['sessions', 'slots', 'locale', 'remote', 'remote.session', 'uiWorkspace']
 
     /**
      * Client plugin body.
@@ -840,6 +1601,49 @@ window.__ModuleLoader__.load({
 
       ctx.slots.inject('shell.overlay', () =>
         ctx.slots.register({ name: 'shell.overlay', id: 'dsh-session-folder.notice', order: 21 }, SessionFolderNotice),
+      )
+
+      /**
+       * Open one Session in the main column through the workspace navigation
+       * face; the tree panel stays open so the user can keep browsing.
+       * @param sessionId - Session to open.
+       */
+      /**
+       * Open one Session in the main column through the workspace navigation
+       * face; the tree panel stays open so the user can keep browsing.
+       * @param sessionId - Session to open.
+       */
+      treeOpenSession = (sessionId) => {
+        if (typeof sessionId !== 'string' || sessionId === '') return
+        try {
+          ctx.uiWorkspace.openSession(sessionId)
+        } catch (error) {
+          console.warn('session folder: open session rejected', error)
+        }
+      }
+
+      ctx.slots.inject('sidebar.workspaces.session.menu.item', () =>
+        ctx.slots.register(
+          {
+            name: 'sidebar.workspaces.session.menu.item',
+            id: 'dsh-session-folder.fork-tree-menu',
+            order: 445,
+            locale: NS,
+          },
+          ForkTreeMenuItem,
+        ),
+      )
+
+      ctx.slots.inject('shell.overlay', () =>
+        ctx.slots.register(
+          {
+            name: 'shell.overlay',
+            id: 'dsh-session-folder.fork-tree',
+            order: 18,
+            locale: NS,
+          },
+          ForkTreePanel,
+        ),
       )
     }
 

@@ -1,9 +1,9 @@
 {
   "name": "@dsh-external/dsh-session-folder",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "private": false,
   "type": "module",
-  "description": "DSH plugin: right-click a Session row for its menu (with Open in File Explorer), and right-click a conversation file name for open, reveal, and copy absolute/relative path.",
+  "description": "DSH plugin: right-click enhancements for Session rows, conversation files, and web links, plus a fork-tree view for the sidebar's Session list.",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
@@ -16,7 +16,9 @@
     "dsh-bundle",
     "file-explorer",
     "open-in-editor",
-    "session"
+    "session",
+    "fork-tree",
+    "session-lineage"
   ],
   "exports": {
     ".": "./index.js",

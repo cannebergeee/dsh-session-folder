@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.9.0 — 2026-10-26
+
+- **Fork-tree view** (option ③ from the design review): a **⑂ icon painted over the sidebar's “Workspaces”
+  header row** (icon only; the host exposes no slot there) and a **“Fork tree view”** row in the Session `…`
+  menu open a tree that covers the sidebar's workspace browsing region. The icon's position is measured from the
+  host icon cluster (8px gap, vertically centered) and hides while the host search box is expanded, so it never
+  overlaps the search/sort/add controls.
+- The panel title reuses the host “Workspaces” section-label style (14px / normal / tertiary) and the top-right
+  control is a **folder icon**; no extra hint copy.
+- The tree groups Sessions by Workspace and nests them by `parentId`: parents first, forked children indented
+  with guide lines, deeper forks nesting further. Rows with children collapse/expand; group headers collapse as
+  a whole. Collapse state persists in `localStorage`.
+- Each row shows the host's own `StateDot` semantics: **ongoing** is the 14px rotating ring (faint track plus a
+  breathing arc), warning amber, unread completion green, idle neutral. The state comes from
+  `useSessionStatus`, so a running Session shows the same working indicator as the original list, live.
+- The header filter matches titles and keeps the matching node's ancestors; clicking a node opens that Session
+  through `ctx.uiWorkspace.openSession` (the tree stays open for continued browsing). Close via the header's
+  **folder icon**, `Esc`, or the ⑂ icon again. The panel header carries no extra hint copy.
+- Implementation: a `shell.overlay` entry positioned with `position: fixed` over
+  `[data-slot="sidebar.workspaces"]`, measured and followed with `ResizeObserver`; data comes from the
+  root-scope `useSessions` / `useWorkspaces` / `useSessionStatus` standard props; styling uses `--dsw-*` tokens
+  only. No host source change, no host DOM/ordering manipulation.
+- Docs, plugin description, locale metadata, and keywords updated; version bumped to 1.9.0.
+
 ## 1.8.0 — 2026-10-22
 
 - **Removed** the *VS Code* row from the file menu: the menu is now exactly **打开 / 资源管理器 /
