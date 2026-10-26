@@ -13,6 +13,9 @@
 
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
+>
+> Latest release (v1.9.0, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.0>
 
 ---
 
