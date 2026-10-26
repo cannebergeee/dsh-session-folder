@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.5 — 2026-10-26
+
+- Fixed the tree row context menu intermittently closing while a long Session title was marquee-scrolling: menus
+  ignore scroll events from the title cell, and right-clicking now freezes the marquee before the menu opens.
+- The tree's Workspace group headers now have the same **right-click → 在资源管理器中打开** action as host Workspace
+  rows; it resolves the workspace directory from the Workspace snapshot and opens it through the same Host
+  `openWorkspacePath` operation.
+
 ## 1.9.4 — 2026-10-26
 
 - **Tree-row menu now mirrors the host Session menu**: pin, rename (with shortcut hint), fork, archive, open in

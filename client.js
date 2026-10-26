@@ -517,7 +517,12 @@ window.__ModuleLoader__.load({
             items[index].click()
           }
         }
-        const onScroll = () => close()
+        const onScroll = (event) => {
+          // A title marquee scrolls an inner element; that must not close an
+          // open menu. Only real list/window scrolling dismisses it.
+          if (event.target instanceof Element && event.target.closest('.dsf-tree-title') !== null) return
+          close()
+        }
         document.addEventListener('pointerdown', onPointerDown, true)
         document.addEventListener('keydown', onKeyDown, true)
         window.addEventListener('scroll', onScroll, true)
@@ -1049,11 +1054,14 @@ window.__ModuleLoader__.load({
       React.useEffect(() => () => {
         if (frame.current !== 0) cancelAnimationFrame(frame.current)
       }, [])
-      const rest = () => {
+      const freeze = () => {
         if (frame.current !== 0) {
           cancelAnimationFrame(frame.current)
           frame.current = 0
         }
+      }
+      const rest = () => {
+        freeze()
         const element = ref.current
         if (element === null) return
         element.scrollLeft = 0
@@ -1100,6 +1108,10 @@ window.__ModuleLoader__.load({
           title: props.text,
           onPointerEnter: reveal,
           onPointerLeave: rest,
+          onPointerDown: (event) => {
+            if (event.button === 2) freeze()
+          },
+          onContextMenu: freeze,
         },
         props.text,
       )
@@ -1287,7 +1299,7 @@ window.__ModuleLoader__.load({
      * @returns the group rows.
      */
     function TreeGroups(props) {
-      const { groups, visible, collapsed, onToggle, drag, t } = props
+      const { groups, visible, collapsed, onToggle, drag, onGroupMenu, t } = props
       const rendered = []
       for (const group of groups) {
         const groupKey = 'ws:' + group.key
@@ -1309,6 +1321,10 @@ window.__ModuleLoader__.load({
                 tabIndex: 0,
                 title: drag.active === null ? undefined : t('tree.drag.rootHint'),
                 onClick: () => onToggle(groupKey),
+                onContextMenu: (event) => {
+                  event.preventDefault()
+                  onGroupMenu(group, event.clientX, event.clientY)
+                },
                 onKeyDown: (event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault()
@@ -1595,6 +1611,7 @@ window.__ModuleLoader__.load({
       const forkSession = typeof props.forkSession === 'function' ? props.forkSession : null
       const copySessionId = typeof props.copySessionId === 'function' ? props.copySessionId : null
       const openFolder = typeof props.openFolder === 'function' ? props.openFolder : null
+      const openPath = typeof props.openPath === 'function' ? props.openPath : null
       const stateOf = (row) => treeDotState(
         row,
         statuses !== undefined && typeof statuses.get === 'function' ? statuses.get(row.id) : undefined,
@@ -1663,6 +1680,28 @@ window.__ModuleLoader__.load({
           const next = { ...previous }
           delete next[row.id]
           return next
+        })
+      }
+      const openGroupMenu = (group, x, y) => {
+        if (openPath === null || group.key === '') return
+        const items = workspaces !== null && workspaces !== undefined && Array.isArray(workspaces.items) ? workspaces.items : []
+        const workspace = items.find((item) => item.workspaceId === group.key)
+        const path = workspace !== undefined && typeof workspace.path === 'string' ? workspace.path : ''
+        if (path === '') return
+        menuStore.set({
+          x,
+          y,
+          title: t('workspace.title'),
+          rows: () => [
+            {
+              key: 'open',
+              label: t('menu.open'),
+              icon: h(FolderIcon, {}),
+              onSelect: () => {
+                void openPath(path)
+              },
+            },
+          ],
         })
       }
       const openRowMenu = (row, x, y) => {
@@ -1837,6 +1876,7 @@ window.__ModuleLoader__.load({
                   onPinToggle: pinToggle,
                   onArchive: archiveRow,
                   onMenu: openRowMenu,
+                  onGroupMenu: openGroupMenu,
                   drag,
                   t,
                 }),
@@ -2439,6 +2479,7 @@ window.__ModuleLoader__.load({
               copySessionId: (sessionId) => copyText(sessionId, t('tree.notice.sessionIdCopied')),
               copySessionId: (sessionId) => copyText(sessionId, t('tree.notice.sessionIdCopied')),
               openFolder: (sessionId) => openFolder(sessionId),
+              openPath: (path) => openOnHost({ path }),
               notify,
             }),
           },

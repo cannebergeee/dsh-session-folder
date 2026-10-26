@@ -12,7 +12,7 @@ English: [README.en.md](README.en.md)
 > 已在 DeepSeek Harness 官方仓库的 **Show Your Plugins!** 讨论区发布：
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> 最新 Release（v1.9.4，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.4>
+> 最新 Release（v1.9.5，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.5>
 
 ---
 
@@ -69,8 +69,8 @@ English: [README.en.md](README.en.md)
 
 - **入口**：侧边栏「工作区」标题栏里的 28px **纯图标 ⑂**（不占宿主布局），位置按宿主图标组实测（左侧 8px、垂直中心对齐），**宿主搜索框展开时自动隐藏**；同时「工作区」文字本身也是可点击区域（方案 A 宽松胶囊：文字四周 3px × 9px、圆角 8，插件在其上覆盖透明按钮，不改宿主 DOM）。树打开后，点面板标题「分叉树」或右上角文件夹图标切回列表。
 - **标题样式**：树面板标题沿用宿主「工作区」`sectionLabel` 的样式（14px / 400 / `--dsw-alias-label-tertiary`、line-height 20px），不带额外说明文字；右上角是**宿主同款 16px / 1px 描边文件夹图标**（关闭回列表）。
-- **树行操作**：悬停行显示宿主风格的 `…` / 归档 / 置顶按钮；`…` 菜单按宿主顺序提供置顶、重命名、创建分叉、归档、在资源管理器中打开、分叉树视图、复制 Session ID（重命名带宿主快捷键提示，并弹出插件自己的输入框调用宿主 `session.rename`）；右键树行打开同一菜单。归档运行中的会话会先确认“停止活动并归档”。置顶会排到同级最前。
-- **标题显示**：静止态操作按钮不占宽度，标题拿到整行宽度；hover 时按宿主方式裁切/渐隐，并在指针停留标题上时缓慢横向滚动显示完整标题（`title` tooltip 同时保留）。
+- **树行操作**：悬停行显示宿主风格的 `…` / 归档 / 置顶按钮；`…` 菜单按宿主顺序提供置顶、重命名、创建分叉、归档、在资源管理器中打开、分叉树视图、复制 Session ID（重命名带宿主快捷键提示，并弹出插件自己的输入框调用宿主 `session.rename`）；右键树行打开同一菜单；**右键工作区分组标题**也可“在资源管理器中打开”该工作区目录。归档运行中的会话会先确认“停止活动并归档”。置顶会排到同级最前。
+- **标题显示**：静止态操作按钮不占宽度，标题拿到整行宽度；hover 时按宿主方式裁切/渐隐，并在指针停留标题上时缓慢横向滚动显示完整标题（`title` tooltip 同时保留）；横向滚动期间右键菜单不会被内部 scroll 事件误关。
 - **拖拽调整层级**：把会话拖到另一行 → 成为它的子会话；拖到工作区分组标题 → 成为一级会话；循环与跨 workspace 的拖放会被拒绝，结果持久化。**只调整树视图层级，不改宿主 session header 里的真实 `parentSession`**（宿主没有写 API）；右键“恢复真实 fork 层级”可清除覆盖。
 - **Workspace 分组**：每个工作区一节；会话按 fork 关系嵌套：父会话在前，分叉出的子会话缩进显示，孙级继续嵌套，带竖向连接线。
 - **折叠**：带子节点的行有 chevron，可逐级展开 / 收起；工作区分组也可整体折叠；折叠状态记在 `localStorage`（`dsh-session-folder.fork-tree.collapsed.v1`），刷新后保持。
