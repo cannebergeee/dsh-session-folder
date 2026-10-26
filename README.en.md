@@ -14,8 +14,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.1, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.1>
+> Latest release (v1.9.2, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.2>
 
 ---
 
@@ -85,17 +85,16 @@ only when those props are unavailable does the plugin fall back to a label that 
 
 ### 5. Fork-tree view: Sessions by fork lineage
 
-The **⑂ icon at the right of the sidebar's “Workspaces” header row** (icon only; it does not take host
-layout space), or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers the sidebar's
-workspace browser:
+The **⑂ icon at the right of the sidebar's “Workspaces” header row**, **clicking the “Workspaces” label itself**,
+or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers the sidebar's workspace browser:
 
-- **Entry**: a 26/28px **⑂ icon** in the sidebar's “Workspaces” header row (no host layout space). Its position is
-  measured from the host icon cluster — 8px to its left and vertically centered — and it **hides while the host
-  search box is expanded** so it never lands inside the search field. The Session `…` menu's “Fork tree view”
-  also opens it.
+- **Entry**: a 28px **⑂ icon** in the sidebar's “Workspaces” header row (no host layout space), positioned from
+  the measured host icon cluster — 8px to its left and vertically centered — and **hidden while the host search
+  box is expanded**. The “Workspaces” label itself is also a click target (a transparent plugin overlay, with no
+  host DOM change). While the tree is open, clicking the panel title or the folder icon switches back to the list.
 - **Title style**: the panel title reuses the host “Workspaces” `sectionLabel` style (14px / 400 /
-  `--dsw-alias-label-tertiary`, line-height 20px) with no extra hint copy; the top-right control is a **folder
-  icon** (closes back to the list).
+  `--dsw-alias-label-tertiary`, line-height 20px) with no extra hint copy; the top-right control uses the host's
+  exact **16px / 1px-stroke closed-folder artwork** (closes back to the list).
 - **Grouped by workspace**, Sessions nest by fork lineage: a parent row is followed by its forked children,
   indented with guide lines; deeper forks keep nesting.
 - **Collapse**: rows with children get a chevron; groups collapse as a whole. Collapse state is stored in
@@ -106,7 +105,7 @@ workspace browser:
 - **Filter**: the header input filters by title and keeps the matching node's ancestors visible.
 - **Open**: clicking any node opens that Session in the main column through `ctx.uiWorkspace.openSession`;
   the tree stays open for continuous browsing.
-- **Close**: the header **folder icon**, `Esc`, or the ⑂ icon in the Workspaces header again — the host list returns.
+- **Close / toggle**: click the panel title, the header **folder icon**, `Esc`, or the ⑂ icon in the Workspaces header again — the host list returns.
 
 > This is a **separate tree view**, not a restyle of host rows: host Session rows expose no row-content,
 > ordering, or collapse seat, so the default list stays sorted by “Last updated”. The view only replaces the

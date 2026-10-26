@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.2 — 2026-10-26
+
+- The panel's back-to-list control now uses the host's exact closed-folder artwork (16px, 1px regular
+  stroke, same geometry as workspace rows), so its optical size and weight match the host header icons.
+- Click-to-toggle: an invisible overlay hit target on the host “Workspaces” (工作区) section label opens the
+  tree; the tree panel's “分叉树” title is now a button that closes it. Both are plugin-side overlays — no host
+  source change. The ⑂ icon and folder icon keep working as before.
+
 ## 1.9.1 — 2026-10-26
 
 - Aligned the fork-tree panel header's folder-close control with the host “Workspaces” header: 8px right

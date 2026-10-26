@@ -125,13 +125,18 @@ window.__ModuleLoader__.load({
       '.dsf-tree-launcher{position:fixed;z-index:6;box-sizing:border-box;width:28px;height:28px;padding:0;border:0;border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto}',
       '.dsf-tree-launcher:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
       '.dsf-tree-launcher:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
+      '.dsf-tree-label-hit{position:fixed;z-index:6;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:6px;background:transparent;cursor:pointer}',
+      '.dsf-tree-label-hit:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-tree-label-hit:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
       '.dsf-tree-panel{position:fixed;z-index:5;box-sizing:border-box;display:flex;flex-direction:column;min-height:0;overflow:hidden;background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary);pointer-events:auto;font-family:inherit}',
       '.dsf-tree-head{flex:none;display:flex;align-items:center;gap:4px;height:36px;margin-bottom:4px;margin-top:2px;padding:0 8px 0 4px}',
       '.dsf-tree-heading{flex:1;min-width:0;display:flex;align-items:center}',
-      '.dsf-tree-heading-title{font-size:14px;font-weight:400;line-height:20px;color:var(--dsw-alias-label-tertiary,var(--dsw-alias-label-secondary));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.dsf-tree-heading-title{font-size:14px;font-weight:400;line-height:20px;color:var(--dsw-alias-label-tertiary,var(--dsw-alias-label-secondary));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0;border:0;background:transparent;font-family:inherit;text-align:left;cursor:pointer}',
+      '.dsf-tree-heading-title:hover{color:var(--dsw-alias-label-primary)}',
+      '.dsf-tree-heading-title:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary);border-radius:4px}',
       '.dsf-tree-close{flex:none;width:28px;height:28px;padding:0;border:0;border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}',
       '.dsf-tree-close:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
-      '.dsf-tree-close svg{width:15px;height:15px}',
+      '.dsf-tree-close svg{width:16px;height:16px}',
       '.dsf-tree-search{flex:none;display:flex;align-items:center;gap:6px;height:30px;margin:2px 8px 8px;padding:0 9px;border:1px solid var(--dsw-alias-border-l1);border-radius:8px;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-secondary)}',
       '.dsf-tree-search>svg{flex:none}',
       '.dsf-tree-search input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12.5px}',
@@ -250,18 +255,34 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * Folder glyph.
-     * @param props.size - square edge in pixels (default 14).
+     * Host-compatible closed-folder glyph (same 16px artwork and 1px stroke as
+     * the workspace rows / add-workspace icon).
+     * @param props.size - square edge in pixels (default 16).
      * @returns the icon.
      */
     function FolderIcon(props) {
-      const size = props !== null && props !== undefined && props.size !== undefined ? props.size : 14
+      const size = props !== null && props !== undefined && props.size !== undefined ? props.size : 16
       return h(
-        Icon,
-        { size },
+        'svg',
+        {
+          width: size,
+          height: size,
+          viewBox: '0 0 16 16',
+          fill: 'none',
+          xmlns: 'http://www.w3.org/2000/svg',
+          strokeWidth: 1,
+          'aria-hidden': true,
+          focusable: 'false',
+        },
         h('path', {
-          key: 'folder',
-          d: 'M2.1 4.6c0-.7.6-1.3 1.3-1.3h2.1l1.3 1.5h5.4c.7 0 1.3.6 1.3 1.3v5.4c0 .7-.6 1.3-1.3 1.3H3.4c-.7 0-1.3-.6-1.3-1.3V4.6Z',
+          key: 'outline',
+          d: 'M1.50439 3.11059C1.50439 2.55831 1.95211 2.1106 2.50439 2.1106H5.43389C5.67773 2.1106 5.91318 2.19969 6.09593 2.36113L7.71649 3.79265C7.89924 3.95409 8.1347 4.04319 8.3785 4.04319H13.4958C14.0481 4.04319 14.4958 4.4909 14.4958 5.04319V12.8894C14.4958 13.4417 14.0481 13.8894 13.4958 13.8894H2.50439C1.95211 13.8894 1.50439 13.4417 1.50439 12.8894V4.04319V3.11059Z',
+          stroke: 'currentColor',
+        }),
+        h('path', {
+          key: 'line',
+          d: 'M3.63501 7.66614H12.3647',
+          stroke: 'currentColor',
         }),
       )
     }
@@ -1001,7 +1022,36 @@ window.__ModuleLoader__.load({
             searchOpen = true
             break
           }
-          const next = { left: bounds.left, top: bounds.top, width: bounds.width, height: bounds.height, headerLeft, headerCenterY, searchOpen }
+          let labelLeft = null
+          let labelTop = null
+          let labelWidth = null
+          let labelHeight = null
+          const header = element.firstElementChild
+          if (header instanceof HTMLElement) {
+            const candidate = header.firstElementChild
+            if (candidate instanceof HTMLElement && candidate.tagName === 'SPAN') {
+              const box = candidate.getBoundingClientRect()
+              if (box.width > 8 && box.height > 8) {
+                labelLeft = box.left
+                labelTop = box.top
+                labelWidth = box.width
+                labelHeight = box.height
+              }
+            }
+          }
+          const next = {
+            left: bounds.left,
+            top: bounds.top,
+            width: bounds.width,
+            height: bounds.height,
+            headerLeft,
+            headerCenterY,
+            searchOpen,
+            labelLeft,
+            labelTop,
+            labelWidth,
+            labelHeight,
+          }
           const sameNumber = (a, b) => a === b || (typeof a === 'number' && typeof b === 'number' && Math.abs(a - b) < 0.5)
           setRect((previous) => {
             if (previous === null) return next
@@ -1011,6 +1061,10 @@ window.__ModuleLoader__.load({
               Math.abs(previous.height - next.height) < 0.5 &&
               sameNumber(previous.headerLeft, next.headerLeft) &&
               sameNumber(previous.headerCenterY, next.headerCenterY) &&
+              sameNumber(previous.labelLeft, next.labelLeft) &&
+              sameNumber(previous.labelTop, next.labelTop) &&
+              sameNumber(previous.labelWidth, next.labelWidth) &&
+              sameNumber(previous.labelHeight, next.labelHeight) &&
               previous.searchOpen === next.searchOpen
               ? previous
               : next
@@ -1082,21 +1136,44 @@ window.__ModuleLoader__.load({
         const headerLeft = typeof rect.headerLeft === 'number' ? rect.headerLeft : rect.left + rect.width - 130
         const centerY = typeof rect.headerCenterY === 'number' ? rect.headerCenterY : rect.top + 18
         const left = Math.max(rect.left + 8, headerLeft - 8 - 28)
-        return h(
-          'button',
-          {
-            type: 'button',
-            className: 'dsf-tree-launcher',
-            style: {
-              left: String(left) + 'px',
-              top: String(centerY - 14) + 'px',
+        const parts = []
+        if (typeof rect.labelLeft === 'number' && rect.labelWidth !== null && rect.labelWidth > 8) {
+          parts.push(
+            h('button', {
+              key: 'label',
+              type: 'button',
+              className: 'dsf-tree-label-hit',
+              style: {
+                left: String(rect.labelLeft - 2) + 'px',
+                top: String(rect.labelTop - 2) + 'px',
+                width: String(rect.labelWidth + 4) + 'px',
+                height: String(rect.labelHeight + 4) + 'px',
+              },
+              'aria-label': t('tree.toggle'),
+              title: t('tree.toggle'),
+              onClick: () => treeOpenStore.set(true),
+            }),
+          )
+        }
+        parts.push(
+          h(
+            'button',
+            {
+              key: 'launcher',
+              type: 'button',
+              className: 'dsf-tree-launcher',
+              style: {
+                left: String(left) + 'px',
+                top: String(centerY - 14) + 'px',
+              },
+              'aria-label': t('tree.toggle'),
+              title: t('tree.toggle'),
+              onClick: () => treeOpenStore.set(true),
             },
-            'aria-label': t('tree.toggle'),
-            title: t('tree.toggle'),
-            onClick: () => treeOpenStore.set(true),
-          },
-          h(BranchIcon, { size: 15 }),
+            h(BranchIcon, { size: 15 }),
+          ),
         )
+        return h(React.Fragment, null, parts)
       }
       if (sessions === undefined || workspaces === undefined) return null
       const groups = buildForest(sessions, workspaces, t('tree.ungrouped'))
@@ -1135,7 +1212,17 @@ window.__ModuleLoader__.load({
           h(
             'div',
             { className: 'dsf-tree-heading' },
-            h('span', { className: 'dsf-tree-heading-title' }, t('tree.title')),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'dsf-tree-heading-title',
+                title: t('tree.close'),
+                'aria-label': t('tree.close'),
+                onClick: () => treeOpenStore.set(false),
+              },
+              t('tree.title'),
+            ),
           ),
           h(
             'button',
