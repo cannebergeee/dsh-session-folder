@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.9.3 — 2026-10-26
+
+- **「工作区」入口 hover 改为方案 A（宽松胶囊）**：点击热区在文字四周扩到 3px × 9px（高度 26，圆角 8），
+  不再紧贴文字；行为仍是不改宿主 DOM 的 overlay。
+- **树行补齐宿主会话操作**：悬停显示 `…` / 归档 / 置顶三个按钮；`…` 菜单含置顶、创建分叉、归档、复制
+  Session ID、在资源管理器中打开，以及“恢复真实 fork 层级”；右键树行也打开该菜单。置顶/归档/分叉直接调用
+  `ctx.uiWorkspace` 的公开方法，归档运行中的会话会先弹“停止活动并归档”确认。
+- **树视图内拖拽调整层级**：拖到另一行 = 成为它的子会话；拖到工作区分组标题 = 成为一级会话；循环/跨
+  workspace 的 drop 会被拒绝；调整记录持久化在 localStorage。**注意：DSH 的 `parentSession` 在 session
+  header 里是只读的，宿主没有改写 API，所以这里改的是本插件树的显示层级，真实 fork 关系不变**；右键菜单的
+  “恢复真实 fork 层级”可清除该行的覆盖。
+- 顺带把标题栏 folder 图标换成宿主同款 16px / 1px 描边图形（v1.9.2 已验证）。
+
 ## 1.9.2 — 2026-10-26
 
 - The panel's back-to-list control now uses the host's exact closed-folder artwork (16px, 1px regular

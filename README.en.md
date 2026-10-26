@@ -14,8 +14,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.2, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.2>
+> Latest release (v1.9.3, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.3>
 
 ---
 
@@ -90,11 +90,20 @@ or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers 
 
 - **Entry**: a 28px **⑂ icon** in the sidebar's “Workspaces” header row (no host layout space), positioned from
   the measured host icon cluster — 8px to its left and vertically centered — and **hidden while the host search
-  box is expanded**. The “Workspaces” label itself is also a click target (a transparent plugin overlay, with no
-  host DOM change). While the tree is open, clicking the panel title or the folder icon switches back to the list.
+  box is expanded**. The “Workspaces” label itself is also a click target (plan A: a roomier pill with 3px × 9px
+  padding and an 8px radius; a transparent plugin overlay, with no host DOM change). While the tree is open,
+  clicking the panel title or the folder icon switches back to the list.
 - **Title style**: the panel title reuses the host “Workspaces” `sectionLabel` style (14px / 400 /
   `--dsw-alias-label-tertiary`, line-height 20px) with no extra hint copy; the top-right control uses the host's
   exact **16px / 1px-stroke closed-folder artwork** (closes back to the list).
+- **Row actions**: hovering a row shows the host-style `…` / archive / pin buttons. The `…` menu offers pin,
+  fork, archive, copy Session ID, open in File Explorer, and “Restore real fork lineage”; right-clicking a row
+  opens the same menu. Archiving a running Session asks to stop activity first. Pinned Sessions sort first at
+  their level.
+- **Drag to re-nest**: drop a Session on another row to make it that row's child; drop it on a Workspace group
+  header to make it a root Session. Cycles and cross-Workspace drops are rejected and the result is persisted.
+  **This changes the plugin tree's display hierarchy only** — the host session header's `parentSession` is
+  read-only and has no mutation API; use “Restore real fork lineage” to clear an override.
 - **Grouped by workspace**, Sessions nest by fork lineage: a parent row is followed by its forked children,
   indented with guide lines; deeper forks keep nesting.
 - **Collapse**: rows with children get a chevron; groups collapse as a whole. Collapse state is stored in

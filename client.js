@@ -67,6 +67,23 @@ window.__ModuleLoader__.load({
       'tree.noSessions': '没有可显示的会话',
       'tree.noMatches': '没有匹配的会话',
       'tree.toggleNode': '展开或折叠分叉',
+      'tree.more': '更多操作',
+      'tree.pin': '置顶会话',
+      'tree.unpin': '取消置顶',
+      'tree.fork': '创建分叉',
+      'tree.archive': '归档会话',
+      'tree.copyId': '复制会话 ID',
+      'tree.openFolder': '在资源管理器中打开',
+      'tree.resetParent': '恢复真实 fork 层级',
+      'tree.archiveConfirm.title': '会话正在运行',
+      'tree.archiveConfirm.stop': '停止活动并归档',
+      'tree.archiveConfirm.cancel': '取消',
+      'tree.notice.pinned': '已置顶',
+      'tree.notice.unpinned': '已取消置顶',
+      'tree.notice.archived': '已归档',
+      'tree.notice.sessionIdCopied': '已复制会话 ID',
+      'tree.notice.failed': '操作失败，请重试',
+      'tree.drag.rootHint': '拖到分组标题成为一级会话',
     }
     const en = {
       'menu.open': 'Open in File Explorer',
@@ -98,6 +115,23 @@ window.__ModuleLoader__.load({
       'tree.noSessions': 'No sessions to show',
       'tree.noMatches': 'No matching sessions',
       'tree.toggleNode': 'Expand or collapse branches',
+      'tree.more': 'More actions',
+      'tree.pin': 'Pin session',
+      'tree.unpin': 'Unpin session',
+      'tree.fork': 'Fork session',
+      'tree.archive': 'Archive session',
+      'tree.copyId': 'Copy session ID',
+      'tree.openFolder': 'Open in File Explorer',
+      'tree.resetParent': 'Restore real fork lineage',
+      'tree.archiveConfirm.title': 'This session is running',
+      'tree.archiveConfirm.stop': 'Stop activity and archive',
+      'tree.archiveConfirm.cancel': 'Cancel',
+      'tree.notice.pinned': 'Pinned',
+      'tree.notice.unpinned': 'Unpinned',
+      'tree.notice.archived': 'Archived',
+      'tree.notice.sessionIdCopied': 'Session ID copied',
+      'tree.notice.failed': 'Action failed. Please try again.',
+      'tree.drag.rootHint': 'Drop on a group header to make it a root session',
     }
 
     /**
@@ -125,7 +159,7 @@ window.__ModuleLoader__.load({
       '.dsf-tree-launcher{position:fixed;z-index:6;box-sizing:border-box;width:28px;height:28px;padding:0;border:0;border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:auto}',
       '.dsf-tree-launcher:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
       '.dsf-tree-launcher:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
-      '.dsf-tree-label-hit{position:fixed;z-index:6;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:6px;background:transparent;cursor:pointer}',
+      '.dsf-tree-label-hit{position:fixed;z-index:6;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:8px;background:transparent;cursor:pointer;transition:background-color .14s ease}',
       '.dsf-tree-label-hit:hover{background:var(--dsw-alias-interactive-bg-hover)}',
       '.dsf-tree-label-hit:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
       '.dsf-tree-panel{position:fixed;z-index:5;box-sizing:border-box;display:flex;flex-direction:column;min-height:0;overflow:hidden;background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary);pointer-events:auto;font-family:inherit}',
@@ -180,6 +214,17 @@ window.__ModuleLoader__.load({
       '.dsf-tree-dot[data-state=idle]{color:var(--dsw-alias-state-idle-primary)}',
       '.dsf-tree-title{flex:1;min-width:0;margin-left:4px;font-size:13px;color:var(--dsw-alias-label-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.dsf-tree-count{flex:none;margin-left:6px;padding:0 5px;height:16px;display:inline-flex;align-items:center;border-radius:5px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-secondary);font-size:10px}',
+      '.dsf-tree-actions{flex:none;display:flex;align-items:center;gap:1px;margin-left:4px;opacity:0;pointer-events:none;transition:opacity .12s ease}',
+      '.dsf-tree-row:hover .dsf-tree-actions,.dsf-tree-row:focus-within .dsf-tree-actions{opacity:1;pointer-events:auto}',
+      '.dsf-tree-row:hover .dsf-tree-count,.dsf-tree-row:focus-within .dsf-tree-count{display:none}',
+      '.dsf-tree-action{width:22px;height:22px;padding:0;border:0;border-radius:5px;background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}',
+      '.dsf-tree-action:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
+      '.dsf-tree-action:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
+      '.dsf-tree-action.is-pinned{color:var(--dsw-alias-brand-primary)}',
+      '.dsf-tree-row.is-dragging{opacity:.55}',
+      '.dsf-tree-row.is-drop-target{background:var(--dsw-alias-interactive-bg-hover);box-shadow:inset 0 0 0 1px var(--dsw-alias-brand-primary)}',
+      '.dsf-tree-group-header.is-drop-target{background:var(--dsw-alias-interactive-bg-hover);box-shadow:inset 0 0 0 1px var(--dsw-alias-brand-primary)}',
+      '@media (hover:none){.dsf-tree-actions{opacity:1;pointer-events:auto}}',
       '.dsf-tree-empty{padding:26px 16px;text-align:center;font-size:12px;line-height:1.7;color:var(--dsw-alias-label-secondary)}',
     ].join('')
 
@@ -540,6 +585,42 @@ window.__ModuleLoader__.load({
 
     /** localStorage key for collapsed tree nodes. */
     const TREE_COLLAPSED_KEY = 'dsh-session-folder.fork-tree.collapsed.v1'
+    /** localStorage key for view-level parent overrides. */
+    const TREE_PARENTS_KEY = 'dsh-session-folder.fork-tree.parents.v1'
+
+    /**
+     * Read persisted view-level parent overrides.
+     * @returns a plain object mapping child id to parent id or null (root).
+     */
+    function loadTreeParents() {
+      try {
+        const raw = window.localStorage.getItem(TREE_PARENTS_KEY)
+        if (raw === null) return {}
+        const parsed = JSON.parse(raw)
+        if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return {}
+        const result = {}
+        for (const [childId, parentId] of Object.entries(parsed)) {
+          if (typeof childId !== 'string' || childId === '') continue
+          if (parentId === null) result[childId] = null
+          else if (typeof parentId === 'string' && parentId !== '') result[childId] = parentId
+        }
+        return result
+      } catch (error) {
+        return {}
+      }
+    }
+
+    /**
+     * Persist view-level parent overrides.
+     * @param parents - child id to parent id/null map.
+     */
+    function saveTreeParents(parents) {
+      try {
+        window.localStorage.setItem(TREE_PARENTS_KEY, JSON.stringify(parents))
+      } catch (error) {
+        // Storage is best-effort; the tree stays usable without it.
+      }
+    }
 
     /**
      * Read the persisted collapsed node ids.
@@ -599,6 +680,68 @@ window.__ModuleLoader__.load({
     }
 
     /**
+     * Ellipsis glyph for the row action menu.
+     * @returns the icon.
+     */
+    function EllipsisIcon() {
+      return h(
+        Icon,
+        {},
+        h('circle', { key: 'a', cx: 3.3, cy: 8, r: 1.05, fill: 'currentColor', stroke: 'none' }),
+        h('circle', { key: 'b', cx: 8, cy: 8, r: 1.05, fill: 'currentColor', stroke: 'none' }),
+        h('circle', { key: 'c', cx: 12.7, cy: 8, r: 1.05, fill: 'currentColor', stroke: 'none' }),
+      )
+    }
+
+    /**
+     * Pin glyph; filled for a pinned row, outline otherwise.
+     * @param props.filled - whether the row is pinned.
+     * @param props.size - square edge in pixels.
+     * @returns the icon.
+     */
+    function PinIcon(props) {
+      const filled = props !== null && props !== undefined && props.filled === true
+      const size = props !== null && props !== undefined && props.size !== undefined ? props.size : 14
+      return h(
+        Icon,
+        { size },
+        h('path', {
+          key: 'pin',
+          d: 'M9.9 1.8 14.2 6.1 11.9 6.7 9.5 9.1 9.8 11.4 4.6 6.2 6.9 6.5 9.3 4.1 9.9 1.8Z',
+          fill: filled ? 'currentColor' : 'none',
+        }),
+        h('path', { key: 'needle', d: 'M5.2 10.8 2.1 13.9' }),
+      )
+    }
+
+    /**
+     * Archive-box glyph.
+     * @returns the icon.
+     */
+    function ArchiveIcon() {
+      return h(
+        Icon,
+        {},
+        h('path', { key: 'lid', d: 'M2.2 2.6h11.6v2.5H2.2z' }),
+        h('path', { key: 'box', d: 'M3.2 5.1h9.6v8.3H3.2z' }),
+        h('path', { key: 'slot', d: 'M6.2 7.7h3.6' }),
+      )
+    }
+
+    /**
+     * Copy glyph for the Session-id menu row.
+     * @returns the icon.
+     */
+    function CopyIcon() {
+      return h(
+        Icon,
+        {},
+        h('rect', { key: 'back', x: 2.2, y: 5.1, width: 7.2, height: 8.7, rx: 1.1 }),
+        h('path', { key: 'front', d: 'M6.1 5.1V3.4c0-.7.5-1.2 1.2-1.2h5.3c.7 0 1.2.5 1.2 1.2v6.1c0 .7-.5 1.2-1.2 1.2h-1.7' }),
+      )
+    }
+
+    /**
      * Display title of one Session-list row.
      * @param row - row from `SessionListState.byId`.
      * @param t - bound locale translate.
@@ -629,9 +772,10 @@ window.__ModuleLoader__.load({
      * @param sessions - Session-list snapshot.
      * @param workspaces - Workspace snapshot.
      * @param ungroupedLabel - localized label for Sessions outside every Workspace.
+     * @param parentOverrides - view-level child -> parent (or null) overrides.
      * @returns groups with root and child lists; empty groups are dropped.
      */
-    function buildForest(sessions, workspaces, ungroupedLabel) {
+    function buildForest(sessions, workspaces, ungroupedLabel, parentOverrides) {
       const rows = sessions !== null && sessions !== undefined && sessions.byId !== undefined ? sessions.byId : {}
       const items = workspaces !== null && workspaces !== undefined && Array.isArray(workspaces.items) ? workspaces.items : []
       const archived = new Set(
@@ -639,23 +783,59 @@ window.__ModuleLoader__.load({
           ? workspaces.archivedSessionIds
           : [],
       )
+      const pinned = new Set(
+        workspaces !== null && workspaces !== undefined && Array.isArray(workspaces.pinnedSessionIds)
+          ? workspaces.pinnedSessionIds
+          : [],
+      )
+      const overrides = parentOverrides !== null && typeof parentOverrides === 'object' ? parentOverrides : {}
       const makeGroup = (key, title, members) => {
         const byId = new Map(members.map((row) => [row.id, row]))
+        const parentOf = (row) => {
+          if (Object.prototype.hasOwnProperty.call(overrides, row.id)) {
+            const override = overrides[row.id]
+            if (override === null) return null
+            if (typeof override === 'string' && override !== row.id && byId.has(override)) return override
+          }
+          const real = row.parentId
+          return typeof real === 'string' && real !== row.id && byId.has(real) ? real : null
+        }
+        // Resolve effective parent links first, then break cycles introduced by
+        // a stale/naive view-level override: a cycle's row falls back to root.
+        const parentMap = new Map()
+        for (const row of members) parentMap.set(row.id, parentOf(row))
+        for (const row of members) {
+          const seen = new Set([row.id])
+          let cursor = parentMap.get(row.id)
+          while (cursor !== null && cursor !== undefined) {
+            if (seen.has(cursor)) {
+              parentMap.set(row.id, null)
+              break
+            }
+            seen.add(cursor)
+            cursor = parentMap.get(cursor)
+          }
+        }
         const children = new Map()
         const roots = []
         for (const row of members) {
-          const parentId = row.parentId
-          if (typeof parentId === 'string' && parentId !== row.id && byId.has(parentId)) {
+          const parentId = parentMap.get(row.id)
+          if (parentId === null || parentId === undefined) {
+            roots.push(row)
+          } else {
             const kids = children.get(parentId)
             if (kids === undefined) children.set(parentId, [row])
             else kids.push(row)
-          } else {
-            roots.push(row)
           }
         }
-        const newestFirst = (left, right) => (right.updatedAt || 0) - (left.updatedAt || 0)
-        roots.sort(newestFirst)
-        for (const kids of children.values()) kids.sort(newestFirst)
+        const pinnedFirst = (left, right) => {
+          const leftPinned = pinned.has(left.id) ? 1 : 0
+          const rightPinned = pinned.has(right.id) ? 1 : 0
+          if (leftPinned !== rightPinned) return rightPinned - leftPinned
+          return (right.updatedAt || 0) - (left.updatedAt || 0)
+        }
+        roots.sort(pinnedFirst)
+        for (const kids of children.values()) kids.sort(pinnedFirst)
         return { key, title, roots, children, total: members.length }
       }
       const groups = []
@@ -788,6 +968,26 @@ window.__ModuleLoader__.load({
     }
 
     /**
+     * Whether the given target is a descendant of the ancestor in the current
+     * (override-applied) tree. Used to reject cycle-producing drops.
+     * @param groups - derived forest groups.
+     * @param ancestorId - prospective dragged parent.
+     * @param targetId - prospective drop target.
+     * @returns true when targetId sits under ancestorId.
+     */
+    function treeHasDescendant(groups, ancestorId, targetId) {
+      for (const group of groups) {
+        const stack = [...(group.children.get(ancestorId) || [])]
+        while (stack.length > 0) {
+          const node = stack.pop()
+          if (node.id === targetId) return true
+          stack.push(...(group.children.get(node.id) || []))
+        }
+      }
+      return false
+    }
+
+    /**
      * Recursive tree rows for one Workspace group.
      * @param props.group - derived group.
      * @param props.roots - rows to render at this level.
@@ -795,32 +995,76 @@ window.__ModuleLoader__.load({
      * @param props.visible - filtered id set, or null when unfiltered.
      * @param props.collapsed - collapsed node ids.
      * @param props.currentId - selected Session id.
+     * @param props.pinned - pinned Session id set.
      * @param props.stateOf - resolves one row's `StateDot` state.
      * @param props.onToggle - collapse toggle callback.
      * @param props.onOpen - open-Session callback.
+     * @param props.onPinToggle - pin/unpin callback.
+     * @param props.onArchive - archive callback.
+     * @param props.onMenu - row menu callback (row, x, y).
+     * @param props.drag - drag/drop state and callbacks.
      * @param props.t - bound locale translate.
      * @returns the tree rows.
      */
     function TreeNodes(props) {
-      const { group, roots, level, visible, collapsed, currentId, stateOf, onToggle, onOpen, t } = props
+      const { group, roots, level, visible, collapsed, currentId, pinned, stateOf, onToggle, onOpen, onPinToggle, onArchive, onMenu, drag, t } = props
       return roots.map((row) => {
         const children = group.children.get(row.id) || []
         const shownChildren = visible === null ? children : children.filter((child) => visible.has(child.id))
         const isCollapsed = visible === null && collapsed.has(row.id)
         const expanded = shownChildren.length > 0 && !isCollapsed
+        const isPinned = pinned.has(row.id)
+        const isDragging = drag.active !== null && drag.active.id === row.id
+        const isDropTarget = drag.drop !== null && drag.drop.kind === 'row' && drag.drop.id === row.id
         return h(
           'div',
           { key: row.id, className: 'dsf-tree-node' },
           h(
             'div',
             {
-              className: 'dsf-tree-row' + (row.id === currentId ? ' is-current' : ''),
+              className:
+                'dsf-tree-row' +
+                (row.id === currentId ? ' is-current' : '') +
+                (isDragging ? ' is-dragging' : '') +
+                (isDropTarget ? ' is-drop-target' : ''),
               role: 'treeitem',
+              'data-session-id': row.id,
               'aria-level': level,
               'aria-expanded': shownChildren.length > 0 ? String(expanded) : undefined,
               'aria-selected': row.id === currentId,
               tabIndex: 0,
+              draggable: true,
               onClick: () => onOpen(row.id),
+              onContextMenu: (event) => {
+                event.preventDefault()
+                onMenu(row, event.clientX, event.clientY)
+              },
+              onDragStart: (event) => {
+                if (event.target instanceof Element && event.target.closest('button') !== null) {
+                  event.preventDefault()
+                  return
+                }
+                event.dataTransfer.effectAllowed = 'move'
+                try {
+                  event.dataTransfer.setData('text/plain', row.id)
+                } catch (error) {
+                  // Some embedded browsers deny custom drag payloads; the
+                  // plugin drag state below still carries the row id.
+                }
+                drag.start(row, group.key)
+              },
+              onDragEnd: drag.end,
+              onDragOver: (event) => {
+                if (!drag.canDropRow(row, group.key)) return
+                event.preventDefault()
+                event.dataTransfer.dropEffect = 'move'
+                drag.overRow(row, group.key)
+              },
+              onDrop: (event) => {
+                if (!drag.canDropRow(row, group.key)) return
+                event.preventDefault()
+                drag.dropRow(row, group.key)
+              },
               onKeyDown: (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                   event.preventDefault()
@@ -855,23 +1099,64 @@ window.__ModuleLoader__.load({
             shownChildren.length > 0
               ? h('span', { key: 'count', className: 'dsf-tree-count' }, String(shownChildren.length))
               : null,
+            h(
+              'span',
+              {
+                key: 'actions',
+                className: 'dsf-tree-actions',
+                onClick: (event) => event.stopPropagation(),
+                onPointerDown: (event) => event.stopPropagation(),
+              },
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dsf-tree-action',
+                  title: t('tree.more'),
+                  'aria-label': t('tree.more'),
+                  onClick: (event) => {
+                    event.stopPropagation()
+                    const rect = event.currentTarget.getBoundingClientRect()
+                    onMenu(row, rect.left, rect.bottom + 4)
+                  },
+                },
+                h(EllipsisIcon, {}),
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dsf-tree-action',
+                  title: t('tree.archive'),
+                  'aria-label': t('tree.archive'),
+                  onClick: (event) => {
+                    event.stopPropagation()
+                    onArchive(row)
+                  },
+                },
+                h(ArchiveIcon, {}),
+              ),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dsf-tree-action' + (isPinned ? ' is-pinned' : ''),
+                  title: t(isPinned ? 'tree.unpin' : 'tree.pin'),
+                  'aria-label': t(isPinned ? 'tree.unpin' : 'tree.pin'),
+                  onClick: (event) => {
+                    event.stopPropagation()
+                    onPinToggle(row, isPinned)
+                  },
+                },
+                h(PinIcon, { filled: isPinned }),
+              ),
+            ),
           ),
           expanded
             ? h(
                 'div',
                 { key: 'children', className: 'dsf-tree-children', role: 'group' },
-                h(TreeNodes, {
-                  group,
-                  roots: shownChildren,
-                  level: level + 1,
-                  visible,
-                  collapsed,
-                  currentId,
-                  stateOf,
-                  onToggle,
-                  onOpen,
-                  t,
-                }),
+                h(TreeNodes, { ...props, roots: shownChildren, level: level + 1 }),
               )
             : null,
         )
@@ -881,23 +1166,17 @@ window.__ModuleLoader__.load({
     /**
      * Workspace-grouped tree body.
      * @param props.groups - derived forest groups.
-     * @param props.visible - filtered id set, or null.
-     * @param props.collapsed - collapsed node ids.
-     * @param props.currentId - selected Session id.
-     * @param props.stateOf - resolves one row's `StateDot` state.
-     * @param props.onToggle - collapse toggle callback.
-     * @param props.onOpen - open-Session callback.
-     * @param props.t - bound locale translate.
      * @returns the group rows.
      */
     function TreeGroups(props) {
-      const { groups, visible, collapsed, currentId, stateOf, onToggle, onOpen, t } = props
+      const { groups, visible, collapsed, onToggle, drag, t } = props
       const rendered = []
       for (const group of groups) {
         const groupKey = 'ws:' + group.key
         const roots = visible === null ? group.roots : group.roots.filter((row) => visible.has(row.id))
         if (visible !== null && roots.length === 0) continue
         const groupCollapsed = visible === null && collapsed.has(groupKey)
+        const isDropTarget = drag.drop !== null && drag.drop.kind === 'group' && drag.drop.key === group.key
         rendered.push(
           h(
             'div',
@@ -905,17 +1184,29 @@ window.__ModuleLoader__.load({
             h(
               'div',
               {
-                className: 'dsf-tree-group-header',
+                className: 'dsf-tree-group-header' + (isDropTarget ? ' is-drop-target' : ''),
                 role: 'treeitem',
                 'aria-level': 1,
                 'aria-expanded': String(!groupCollapsed),
                 tabIndex: 0,
+                title: drag.active === null ? undefined : t('tree.drag.rootHint'),
                 onClick: () => onToggle(groupKey),
                 onKeyDown: (event) => {
                   if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault()
                     onToggle(groupKey)
                   }
+                },
+                onDragOver: (event) => {
+                  if (!drag.canDropGroup(group.key)) return
+                  event.preventDefault()
+                  event.dataTransfer.dropEffect = 'move'
+                  drag.overGroup(group.key)
+                },
+                onDrop: (event) => {
+                  if (!drag.canDropGroup(group.key)) return
+                  event.preventDefault()
+                  drag.dropGroup(group.key)
                 },
               },
               h(
@@ -937,18 +1228,7 @@ window.__ModuleLoader__.load({
                   { key: 'body', className: 'dsf-tree-group-body' },
                   roots.length === 0
                     ? h('div', { key: 'empty', className: 'dsf-tree-empty' }, t('tree.noSessions'))
-                    : h(TreeNodes, {
-                        group,
-                        roots,
-                        level: 2,
-                        visible,
-                        collapsed,
-                        currentId,
-                        stateOf,
-                        onToggle,
-                        onOpen,
-                        t,
-                      }),
+                    : h(TreeNodes, { ...props, group, roots, level: 2 }),
                 ),
           ),
         )
@@ -1114,11 +1394,17 @@ window.__ModuleLoader__.load({
       const statuses = typeof props.useSessionStatus === 'function' ? props.useSessionStatus((state) => state) : undefined
       const [filter, setFilter] = React.useState('')
       const [collapsed, setCollapsed] = React.useState(loadTreeCollapsed)
+      const [parents, setParents] = React.useState(loadTreeParents)
+      const [dragActive, setDragActive] = React.useState(null)
+      const [dragDrop, setDragDrop] = React.useState(null)
       const rect = useSidebarRegion(true)
       const t = typeof props.t === 'function' ? props.t : (key) => key
       React.useEffect(() => {
         saveTreeCollapsed(collapsed)
       }, [collapsed])
+      React.useEffect(() => {
+        saveTreeParents(parents)
+      }, [parents])
       React.useEffect(() => {
         if (!open) return undefined
         const onKeyDown = (event) => {
@@ -1144,10 +1430,10 @@ window.__ModuleLoader__.load({
               type: 'button',
               className: 'dsf-tree-label-hit',
               style: {
-                left: String(rect.labelLeft - 2) + 'px',
-                top: String(rect.labelTop - 2) + 'px',
-                width: String(rect.labelWidth + 4) + 'px',
-                height: String(rect.labelHeight + 4) + 'px',
+                left: String(rect.labelLeft - 9) + 'px',
+                top: String(rect.labelTop - 3) + 'px',
+                width: String(rect.labelWidth + 18) + 'px',
+                height: String(rect.labelHeight + 6) + 'px',
               },
               'aria-label': t('tree.toggle'),
               title: t('tree.toggle'),
@@ -1176,9 +1462,21 @@ window.__ModuleLoader__.load({
         return h(React.Fragment, null, parts)
       }
       if (sessions === undefined || workspaces === undefined) return null
-      const groups = buildForest(sessions, workspaces, t('tree.ungrouped'))
+      const groups = buildForest(sessions, workspaces, t('tree.ungrouped'), parents)
       const visible = filter.trim() === '' ? null : collectVisibleTreeIds(groups, filter)
       const currentId = currentTreeSessionId(sessions)
+      const pinned = new Set(
+        workspaces !== null && workspaces !== undefined && Array.isArray(workspaces.pinnedSessionIds)
+          ? workspaces.pinnedSessionIds
+          : [],
+      )
+      const notify = typeof props.notify === 'function' ? props.notify : () => {}
+      const pinSession = typeof props.pinSession === 'function' ? props.pinSession : null
+      const unpinSession = typeof props.unpinSession === 'function' ? props.unpinSession : null
+      const archiveSession = typeof props.archiveSession === 'function' ? props.archiveSession : null
+      const forkSession = typeof props.forkSession === 'function' ? props.forkSession : null
+      const copySessionId = typeof props.copySessionId === 'function' ? props.copySessionId : null
+      const openFolder = typeof props.openFolder === 'function' ? props.openFolder : null
       const stateOf = (row) => treeDotState(
         row,
         statuses !== undefined && typeof statuses.get === 'function' ? statuses.get(row.id) : undefined,
@@ -1192,6 +1490,145 @@ window.__ModuleLoader__.load({
           else next.add(id)
           return next
         })
+      }
+      const pinToggle = (row, isPinned) => {
+        const action = isPinned ? unpinSession : pinSession
+        if (action === null) return
+        Promise.resolve(action(row.id)).then(
+          () => notify(t(isPinned ? 'tree.notice.unpinned' : 'tree.notice.pinned'), 'success'),
+          () => notify(t('tree.notice.failed'), 'error'),
+        )
+      }
+      const forkRow = (row) => {
+        if (forkSession === null) return
+        Promise.resolve(forkSession(row.id)).catch(() => notify(t('tree.notice.failed'), 'error'))
+      }
+      const archiveRow = (row) => {
+        if (archiveSession === null) return
+        const finish = () => notify(t('tree.notice.archived'), 'success')
+        const failHard = () => notify(t('tree.notice.failed'), 'error')
+        const fail = (error) => {
+          const active = error instanceof Error &&
+            error.name === 'WorkspaceArchiveError' &&
+            error.rpcError !== undefined && error.rpcError !== null &&
+            error.rpcError.code === 'workspace/session-active'
+          if (!active) {
+            failHard()
+            return
+          }
+          menuStore.set({
+            x: Math.max(16, Math.round(window.innerWidth / 2 - 120)),
+            y: Math.max(16, Math.round(window.innerHeight / 2 - 80)),
+            title: t('tree.archiveConfirm.title'),
+            rows: () => [
+              {
+                key: 'stop',
+                label: t('tree.archiveConfirm.stop'),
+                icon: h(ArchiveIcon, {}),
+                onSelect: () => {
+                  Promise.resolve(archiveSession(row.id, { stopActivity: true })).then(finish, failHard)
+                },
+              },
+              {
+                key: 'cancel',
+                label: t('tree.archiveConfirm.cancel'),
+                onSelect: () => {},
+              },
+            ],
+          })
+        }
+        Promise.resolve(archiveSession(row.id)).then(finish, fail)
+      }
+      const resetParent = (row) => {
+        setParents((previous) => {
+          if (!Object.prototype.hasOwnProperty.call(previous, row.id)) return previous
+          const next = { ...previous }
+          delete next[row.id]
+          return next
+        })
+      }
+      const openRowMenu = (row, x, y) => {
+        const isPinned = pinned.has(row.id)
+        const rows = [
+          {
+            key: 'pin',
+            label: t(isPinned ? 'tree.unpin' : 'tree.pin'),
+            icon: h(PinIcon, { filled: isPinned }),
+            onSelect: () => pinToggle(row, isPinned),
+          },
+          {
+            key: 'fork',
+            label: t('tree.fork'),
+            icon: h(BranchIcon, {}),
+            onSelect: () => forkRow(row),
+          },
+          {
+            key: 'archive',
+            label: t('tree.archive'),
+            icon: h(ArchiveIcon, {}),
+            onSelect: () => archiveRow(row),
+          },
+          { key: 'sep-1', separator: true },
+          {
+            key: 'copy-id',
+            label: t('tree.copyId'),
+            icon: h(CopyIcon, {}),
+            onSelect: () => {
+              if (copySessionId !== null) void copySessionId(row.id)
+            },
+          },
+          {
+            key: 'open-folder',
+            label: t('tree.openFolder'),
+            icon: h(FolderIcon, {}),
+            onSelect: () => {
+              if (openFolder !== null) void openFolder(row.id)
+            },
+          },
+        ]
+        if (Object.prototype.hasOwnProperty.call(parents, row.id)) {
+          rows.push({ key: 'sep-2', separator: true })
+          rows.push({
+            key: 'reset-parent',
+            label: t('tree.resetParent'),
+            icon: h(BranchIcon, {}),
+            onSelect: () => resetParent(row),
+          })
+        }
+        menuStore.set({ x, y, title: treeTitle(row, t), rows: () => rows })
+      }
+      const drag = {
+        active: dragActive,
+        drop: dragDrop,
+        start: (row, groupKey) => {
+          setDragActive({ id: row.id, groupKey })
+          setDragDrop(null)
+        },
+        end: () => {
+          setDragActive(null)
+          setDragDrop(null)
+        },
+        canDropRow: (row, groupKey) =>
+          dragActive !== null &&
+          dragActive.groupKey === groupKey &&
+          dragActive.id !== row.id &&
+          !treeHasDescendant(groups, dragActive.id, row.id),
+        canDropGroup: (groupKey) => dragActive !== null && dragActive.groupKey === groupKey,
+        overRow: (row) => setDragDrop({ kind: 'row', id: row.id }),
+        overGroup: (groupKey) => setDragDrop({ kind: 'group', key: groupKey }),
+        dropRow: (row, groupKey) => {
+          if (dragActive === null || dragActive.groupKey !== groupKey || dragActive.id === row.id) return
+          if (treeHasDescendant(groups, dragActive.id, row.id)) return
+          setParents((previous) => ({ ...previous, [dragActive.id]: row.id }))
+          setDragActive(null)
+          setDragDrop(null)
+        },
+        dropGroup: (groupKey) => {
+          if (dragActive === null || dragActive.groupKey !== groupKey) return
+          setParents((previous) => ({ ...previous, [dragActive.id]: null }))
+          setDragActive(null)
+          setDragDrop(null)
+        },
       }
       const noMatches = visible !== null && visible.size === 0
       return h(
@@ -1254,7 +1691,21 @@ window.__ModuleLoader__.load({
             : h(
                 'div',
                 { className: 'dsf-tree-scroll', role: 'tree', 'aria-label': t('tree.title') },
-                h(TreeGroups, { groups, visible, collapsed, currentId, stateOf, onToggle, onOpen, t }),
+                h(TreeGroups, {
+                  groups,
+                  visible,
+                  collapsed,
+                  currentId,
+                  pinned,
+                  stateOf,
+                  onToggle,
+                  onOpen,
+                  onPinToggle: pinToggle,
+                  onArchive: archiveRow,
+                  onMenu: openRowMenu,
+                  drag,
+                  t,
+                }),
               ),
       )
     }
@@ -1730,6 +2181,15 @@ window.__ModuleLoader__.load({
             id: 'dsh-session-folder.fork-tree',
             order: 18,
             locale: NS,
+            inject: () => ({
+              pinSession: (sessionId) => ctx.uiWorkspace.pinSession(sessionId),
+              unpinSession: (sessionId) => ctx.uiWorkspace.unpinSession(sessionId),
+              archiveSession: (sessionId, options) => ctx.uiWorkspace.archiveSession(sessionId, options),
+              forkSession: (sessionId) => ctx.uiWorkspace.forkSession(sessionId),
+              copySessionId: (sessionId) => copyText(sessionId, t('tree.notice.sessionIdCopied')),
+              openFolder: (sessionId) => openFolder(sessionId),
+              notify,
+            }),
           },
           ForkTreePanel,
         ),
