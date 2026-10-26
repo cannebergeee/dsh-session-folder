@@ -126,7 +126,7 @@ window.__ModuleLoader__.load({
       '.dsf-tree-launcher:hover{background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary)}',
       '.dsf-tree-launcher:focus-visible{outline:none;box-shadow:0 0 0 1px var(--dsw-alias-brand-primary)}',
       '.dsf-tree-panel{position:fixed;z-index:5;box-sizing:border-box;display:flex;flex-direction:column;min-height:0;overflow:hidden;background:var(--dsw-specific-sidebar-fill);color:var(--dsw-alias-label-primary);pointer-events:auto;font-family:inherit}',
-      '.dsf-tree-head{flex:none;display:flex;align-items:center;gap:4px;height:36px;margin-bottom:4px;margin-top:2px;padding:0 4px}',
+      '.dsf-tree-head{flex:none;display:flex;align-items:center;gap:4px;height:36px;margin-bottom:4px;margin-top:2px;padding:0 8px 0 4px}',
       '.dsf-tree-heading{flex:1;min-width:0;display:flex;align-items:center}',
       '.dsf-tree-heading-title{font-size:14px;font-weight:400;line-height:20px;color:var(--dsw-alias-label-tertiary,var(--dsw-alias-label-secondary));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.dsf-tree-close{flex:none;width:28px;height:28px;padding:0;border:0;border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}',
@@ -251,12 +251,14 @@ window.__ModuleLoader__.load({
 
     /**
      * Folder glyph.
+     * @param props.size - square edge in pixels (default 14).
      * @returns the icon.
      */
-    function FolderIcon() {
+    function FolderIcon(props) {
+      const size = props !== null && props !== undefined && props.size !== undefined ? props.size : 14
       return h(
         Icon,
-        {},
+        { size },
         h('path', {
           key: 'folder',
           d: 'M2.1 4.6c0-.7.6-1.3 1.3-1.3h2.1l1.3 1.5h5.4c.7 0 1.3.6 1.3 1.3v5.4c0 .7-.6 1.3-1.3 1.3H3.4c-.7 0-1.3-.6-1.3-1.3V4.6Z',
@@ -1144,7 +1146,7 @@ window.__ModuleLoader__.load({
               title: t('tree.close'),
               onClick: () => treeOpenStore.set(false),
             },
-            h(FolderIcon, { key: 'folder' }),
+            h(FolderIcon, { key: 'folder', size: 16 }),
           ),
         ),
         h(

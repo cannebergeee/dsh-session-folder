@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.1 — 2026-10-26
+
+- Aligned the fork-tree panel header's folder-close control with the host “Workspaces” header: 8px right
+  inset (the host's effective inset), 28px hit area, 16px glyph, and the same vertical centering and
+  `--dsw-radius-sm` hover surface. No behaviour change.
+
 ## 1.9.0 — 2026-10-26
 
 - **Fork-tree view** (option ③ from the design review): a **⑂ icon painted over the sidebar's “Workspaces”
