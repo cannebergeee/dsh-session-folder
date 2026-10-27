@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.9.7 — 2026-10-27
+
+- Removed the plugin's own two header icons: the ⑂ launcher and the tree panel's folder-close button.
+- The tree panel now starts **below** the native “Workspaces” header, so both views keep the host's three native
+  header icons (search, sort/view options, add workspace) untouched and usable. Clicking the “Workspaces” label
+  toggles the tree; the Session `…` menu still opens it, and `Esc` closes it.
+- The native header's search expansion hides the tree while searching and restores it afterward; no extra custom
+  chrome is added above the tree body.
+- No host source change.
+
 ## 1.9.6 — 2026-10-26
 
 - **Workspace group headers in the fork tree now carry the host Workspace row's two hover actions**:

@@ -12,7 +12,7 @@ English: [README.en.md](README.en.md)
 > 已在 DeepSeek Harness 官方仓库的 **Show Your Plugins!** 讨论区发布：
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> 最新 Release（v1.9.6，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.6>
+> 最新 Release（v1.9.7，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.7>
 
 ---
 
@@ -65,10 +65,10 @@ English: [README.en.md](README.en.md)
 
 ### 5. 分叉树视图：按 fork 关系看会话层级
 
-**侧边栏「工作区」标题栏右侧的 ⑂ 图标**、**直接点击「工作区」文字**，或**会话 `…` 菜单里的「分叉树视图」** → 一个覆盖侧边栏 workspace 浏览区的树视图打开：
+**侧边栏「工作区」标题栏右侧的原生三个图标（搜索 / 排序 / 新建工作区）在列表和树两种视图下都保留**；点击「工作区」文字、或会话 `…` 菜单里的「分叉树视图」→ 切换/打开树视图：
 
-- **入口**：侧边栏「工作区」标题栏里的 28px **纯图标 ⑂**（不占宿主布局），位置按宿主图标组实测（左侧 8px、垂直中心对齐），**宿主搜索框展开时自动隐藏**；同时「工作区」文字本身也是可点击区域（方案 A 宽松胶囊：文字四周 3px × 9px、圆角 8，插件在其上覆盖透明按钮，不改宿主 DOM）。树打开后，点面板标题「分叉树」或右上角文件夹图标切回列表。
-- **标题样式**：树面板标题沿用宿主「工作区」`sectionLabel` 的样式（14px / 400 / `--dsw-alias-label-tertiary`、line-height 20px），不带额外说明文字；右上角是**宿主同款 16px / 1px 描边文件夹图标**（关闭回列表）。
+- **入口 / 切换**：两种视图共用宿主原生「工作区」标题栏（不额外添加插件图标）。直接点「工作区」文字开/关树（方案 A 宽松胶囊 hover：文字四周 3px × 9px、圆角 8，插件覆盖透明点击区，不改宿主 DOM）；宿主搜索框展开时树暂时隐藏，搜索关闭后恢复；树打开时点同一处「工作区」文字或按 `Esc` 回列表。
+- **原生标题栏**：树面板从原生标题栏**下方**开始渲染，搜索 / 排序 / 新建工作区三个原生图标在树视图下仍可见可用；不再有插件的 ⑂ 图标或面板右上角文件夹按钮。
 - **树行操作**：悬停行显示宿主风格的 `…` / 归档 / 置顶按钮；`…` 菜单按宿主顺序提供置顶、重命名、创建分叉、归档、在资源管理器中打开、分叉树视图、复制 Session ID（重命名带宿主快捷键提示，并弹出插件自己的输入框调用宿主 `session.rename`）；右键树行打开同一菜单；**右键工作区分组标题**也可“在资源管理器中打开”该工作区目录。归档运行中的会话会先确认“停止活动并归档”。置顶会排到同级最前。
 - **工作区分组操作**：悬停分组标题显示宿主工作区行同款 `…` / `＋` 两个按钮 —— `…` 可重命名 / 删除工作区（删除有确认，走宿主 `workspaces.delete`），`＋` 在该工作区新建会话（走 `uiWorkspace.startSession`）。
 - **标题显示**：静止态操作按钮不占宽度，标题拿到整行宽度；hover 时按宿主方式裁切/渐隐，并在指针停留标题上时缓慢横向滚动显示完整标题（`title` tooltip 同时保留）；横向滚动期间右键菜单不会被内部 scroll 事件误关。
@@ -78,9 +78,9 @@ English: [README.en.md](README.en.md)
 - **状态**：每行左侧与宿主原版一致 —— **运行中**是 14px 的旋转环（半透明 track + 呼吸 arc），等待确认为琥珀点、完成未读为绿点、空闲为灰点；状态来自 `useSessionStatus`，会实时刷新（不是静态图标）。
 - **筛选**：顶部输入框按标题过滤，命中节点会自动带出其祖先（而不是只显示孤立结果）。
 - **点击打开**：点树中任意节点，用 `ctx.uiWorkspace.openSession` 在主视图打开该会话；树保持打开，方便连续跳转。
-- **关闭 / 切换**：点面板标题「分叉树」、右上角**文件夹图标**、`Esc`，或再点一次「工作区」栏的 ⑂ 图标，回到宿主原列表。
+- **关闭 / 切换**：再点一次「工作区」文字、按 `Esc`，或从会话 `…` 菜单（树打开时菜单项为无操作）回到宿主原列表。
 
-> 这是**独立的树视图**，不是把宿主行改造成树：宿主会话行没有行内容/排序/折叠插槽，所以默认按「最近更新」排序、无法稳定嵌套。树视图只替换侧边栏的 **workspace 浏览区**，顶部的品牌 / 新会话与 header 的入口保持可用；打开期间宿主的搜索/分组暂时被覆盖，关闭后原样恢复。入口图标是插件画在「工作区」标题栏上的 overlay 按钮（宿主没有该 header 的插件槽），不改宿主源码。
+> 这是**独立的树视图**，不是把宿主行改造成树：宿主会话行没有行内容/排序/折叠插槽，所以默认按「最近更新」排序、无法稳定嵌套。树视图只替换侧边栏 workspace **标题栏下方的浏览区**，宿主原生标题栏（含搜索/排序/新建工作区三个图标）在两种视图下都保留；打开期间宿主列表被树覆盖，关闭后原样恢复。不修改宿主源码。
 
 ---
 
@@ -130,7 +130,7 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-session-folder
 - **复制**：`navigator.clipboard.writeText`。
 - **网址右键**：对话里的 http(s) 链接是普通 `<a href target="_blank">`；「默认浏览器打开」用 `window.open(url, '_blank', 'noopener,noreferrer')`——桌面壳把新窗口一律 deny 并转成 `shell.openExternal`，所以落到系统默认浏览器；纯浏览器部署则是新标签页。
 - **样式**：完全对齐宿主菜单与 toast 的 token（`--dsw-menu-surface-fill` + `--dsw-menu-backdrop-filter` 半透明材质、`--dsw-elevation-prominent`、`--dsw-radius-lg`、`--dsw-alias-menu-icon`、`--dsw-alias-toast-bg`、`--dsw-shadow-lv3` 等），亮/暗主题都跟随；未引入 `dsh-client-ui-primitives`，控件是本插件自己的 `role="menuitem"` 按钮。
-- **分叉树**：数据来自根作用域标准 props 的 `useSessions` / `useWorkspaces` / `useSessionStatus`（`SessionListState` 的 `byId[id].parentId` + workspace 快照的 `items/archivedSessionIds` + 实时状态 map），在插件内按 `parentId` 组装父子关系；树面板是一个 `shell.overlay` 条目，用 `position: fixed` 精确覆盖 `[data-slot="sidebar.workspaces"]` 的可视区域；入口图标是同一 overlay 条目在「工作区」标题栏位置画的 26px 图标按钮（关闭态）：先量宿主该行图标组的最左边界，再放在其左侧 8px，避免与搜索/排序/新建图标重叠；打开后换成树面板；两者都用 `ResizeObserver` 跟随侧栏宽度/折叠变化。树的样式只用 `--dsw-*` token；打开会话复用宿主既有的 `ctx.uiWorkspace.openSession`（与官方 chat 包同一用法），不自行导航。
+- **分叉树**：数据来自根作用域标准 props 的 `useSessions` / `useWorkspaces` / `useSessionStatus`（`SessionListState` 的 `byId[id].parentId` + workspace 快照的 `items/archivedSessionIds` + 实时状态 map），在插件内按 `parentId` 组装父子关系；树面板是一个 `shell.overlay` 条目，用 `position: fixed` **从原生「工作区」标题栏下方开始**覆盖浏览区（顶部边界按标题栏的 next sibling 实测），原生标题栏与三个图标在两种视图下都保留；「工作区」文字上盖一个透明点击区负责开/关树（方案 A 胶囊），两者都用 `ResizeObserver` 跟随侧栏宽度/折叠变化。树的样式只用 `--dsw-*` token；打开会话复用宿主既有的 `ctx.uiWorkspace.openSession`（与官方 chat 包同一用法），不自行导航。
 
 ---
 
@@ -145,7 +145,7 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-session-folder
 - **会话右键的菜单位置**沿用宿主菜单的锚点，弹在 `…` 按钮处，而不是鼠标坐标（宿主 `Menu` 只支持 anchor 定位）。
 - **文件 chip 的路径来源是宿主实现细节**：`title` 属性若在未来 DSH 版本中改变，文件右键会静默失效；会话右键与 `…` 菜单行不受影响。
 - 空白「新会话」行没有 `rowActions`，右键不做任何事。
-- **分叉树是独立视图**：打开时覆盖侧边栏 workspace 浏览区（宿主搜索/分组暂时不可见），关闭后恢复；不把宿主会话行改成可折叠树。树只显示普通会话（排除 subagent、空白与归档），按 `updatedAt` 排序，不显示置顶/归档状态。入口图标用 `position:fixed` 叠加在宿主「工作区」标题栏上（宿主无 header 槽位），若宿主调整该栏布局，图标位置可能需要复核；打开状态不持久（每次启动默认关闭），折叠状态持久。
+- **分叉树是独立视图**：打开时覆盖标题栏下方的 workspace 浏览区（宿主列表暂时不可见），关闭后恢复；不把宿主会话行改成可折叠树。树只显示普通会话（排除 subagent、空白与归档），按 `updatedAt` 排序，不显示置顶/归档状态。树面板不修改原生标题栏，三个原生图标在两种视图下都可用；打开状态不持久（每次启动默认关闭），折叠状态持久。
 
 ## 目录结构
 

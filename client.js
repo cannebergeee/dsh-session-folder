@@ -1544,11 +1544,21 @@ window.__ModuleLoader__.load({
               }
             }
           }
+          let bodyTop = null
+          if (header instanceof HTMLElement) {
+            const sibling = header.nextElementSibling
+            if (sibling instanceof HTMLElement) {
+              const box = sibling.getBoundingClientRect()
+              if (box.top >= bounds.top && box.top < bounds.bottom) bodyTop = box.top
+            }
+            if (bodyTop === null) bodyTop = header.getBoundingClientRect().bottom + 4
+          }
           const next = {
             left: bounds.left,
             top: bounds.top,
             width: bounds.width,
             height: bounds.height,
+            bodyTop,
             headerLeft,
             headerCenterY,
             searchOpen,
@@ -1564,6 +1574,7 @@ window.__ModuleLoader__.load({
               Math.abs(previous.top - next.top) < 0.5 &&
               Math.abs(previous.width - next.width) < 0.5 &&
               Math.abs(previous.height - next.height) < 0.5 &&
+              sameNumber(previous.bodyTop, next.bodyTop) &&
               sameNumber(previous.headerLeft, next.headerLeft) &&
               sameNumber(previous.headerCenterY, next.headerCenterY) &&
               sameNumber(previous.labelLeft, next.labelLeft) &&
@@ -1604,13 +1615,14 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * The fork-tree entry: an icon launcher in the Workspace section header
-     * while closed, and the tree panel covering the sidebar browser while open.
+     * The fork-tree surface. The native Workspace header row stays visible in
+     * both views; the panel only replaces the browser body below it. Clicking
+     * the 「工作区」 label toggles the tree; Escape and the Session menu also close it.
      * @param props.useSessions - root Session-list selector hook.
      * @param props.useWorkspaces - root Workspace selector hook.
      * @param props.useSessionStatus - root live status selector hook.
      * @param props.t - bound locale translate.
-     * @returns the launcher icon or the panel.
+     * @returns the label hit target and/or the tree panel.
      */
     function ForkTreePanel(props) {
       const open = useStore(treeOpenStore)
@@ -1642,50 +1654,24 @@ window.__ModuleLoader__.load({
         return () => document.removeEventListener('keydown', onKeyDown, true)
       }, [open])
       if (rect === null) return null
-      if (!open) {
-        if (rect.searchOpen === true) return null
-        const headerLeft = typeof rect.headerLeft === 'number' ? rect.headerLeft : rect.left + rect.width - 130
-        const centerY = typeof rect.headerCenterY === 'number' ? rect.headerCenterY : rect.top + 18
-        const left = Math.max(rect.left + 8, headerLeft - 8 - 28)
-        const parts = []
-        if (typeof rect.labelLeft === 'number' && rect.labelWidth !== null && rect.labelWidth > 8) {
-          parts.push(
-            h('button', {
-              key: 'label',
-              type: 'button',
-              className: 'dsf-tree-label-hit',
-              style: {
-                left: String(rect.labelLeft - 9) + 'px',
-                top: String(rect.labelTop - 3) + 'px',
-                width: String(rect.labelWidth + 18) + 'px',
-                height: String(rect.labelHeight + 6) + 'px',
-              },
-              'aria-label': t('tree.toggle'),
-              title: t('tree.toggle'),
-              onClick: () => treeOpenStore.set(true),
-            }),
-          )
-        }
-        parts.push(
-          h(
-            'button',
-            {
-              key: 'launcher',
-              type: 'button',
-              className: 'dsf-tree-launcher',
-              style: {
-                left: String(left) + 'px',
-                top: String(centerY - 14) + 'px',
-              },
-              'aria-label': t('tree.toggle'),
-              title: t('tree.toggle'),
-              onClick: () => treeOpenStore.set(true),
+      if (rect.searchOpen === true) return null
+      const labelHit = typeof rect.labelLeft === 'number' && rect.labelWidth !== null && rect.labelWidth > 8
+        ? h('button', {
+            key: 'label',
+            type: 'button',
+            className: 'dsf-tree-label-hit',
+            style: {
+              left: String(rect.labelLeft - 9) + 'px',
+              top: String(rect.labelTop - 3) + 'px',
+              width: String(rect.labelWidth + 18) + 'px',
+              height: String(rect.labelHeight + 6) + 'px',
             },
-            h(BranchIcon, { size: 15 }),
-          ),
-        )
-        return h(React.Fragment, null, parts)
-      }
+            'aria-label': t(open ? 'tree.close' : 'tree.toggle'),
+            title: t(open ? 'tree.close' : 'tree.toggle'),
+            onClick: () => treeOpenStore.set(!open),
+          })
+        : null
+      if (!open) return labelHit
       if (sessions === undefined || workspaces === undefined) return null
       const groups = buildForest(sessions, workspaces, t('tree.ungrouped'), parents)
       const visible = filter.trim() === '' ? null : collectVisibleTreeIds(groups, filter)
@@ -1947,85 +1933,63 @@ window.__ModuleLoader__.load({
         },
       }
       const noMatches = visible !== null && visible.size === 0
+      const panelTop = typeof rect.bodyTop === 'number' ? rect.bodyTop : rect.top + 40
+      const panelHeight = rect.top + rect.height - panelTop
+      if (panelHeight < 60) return labelHit
       return h(
-        'section',
-        {
-          className: 'dsf-tree-panel',
-          style: {
-            left: String(rect.left) + 'px',
-            top: String(rect.top) + 'px',
-            width: String(rect.width) + 'px',
-            height: String(rect.height) + 'px',
-          },
-          'aria-label': t('tree.title'),
-        },
+        React.Fragment,
+        null,
+        labelHit,
         h(
-          'div',
-          { className: 'dsf-tree-head' },
+          'section',
+          {
+            className: 'dsf-tree-panel',
+            style: {
+              left: String(rect.left) + 'px',
+              top: String(panelTop) + 'px',
+              width: String(rect.width) + 'px',
+              height: String(panelHeight) + 'px',
+            },
+            'aria-label': t('tree.title'),
+          },
           h(
             'div',
-            { className: 'dsf-tree-heading' },
-            h(
-              'button',
-              {
-                type: 'button',
-                className: 'dsf-tree-heading-title',
-                title: t('tree.close'),
-                'aria-label': t('tree.close'),
-                onClick: () => treeOpenStore.set(false),
-              },
-              t('tree.title'),
-            ),
+            { className: 'dsf-tree-search' },
+            h(SearchIcon, {}),
+            h('input', {
+              value: filter,
+              placeholder: t('tree.filter'),
+              'aria-label': t('tree.filter'),
+              onChange: (event) => setFilter(event.target.value),
+            }),
           ),
-          h(
-            'button',
-            {
-              type: 'button',
-              className: 'dsf-tree-close',
-              'aria-label': t('tree.close'),
-              title: t('tree.close'),
-              onClick: () => treeOpenStore.set(false),
-            },
-            h(FolderIcon, { key: 'folder', size: 16 }),
-          ),
+          noMatches
+            ? h('div', { className: 'dsf-tree-empty' }, t('tree.noMatches'))
+            : groups.length === 0
+              ? h('div', { className: 'dsf-tree-empty' }, t('tree.noSessions'))
+              : h(
+                  'div',
+                  { className: 'dsf-tree-scroll', role: 'tree', 'aria-label': t('tree.title') },
+                  h(TreeGroups, {
+                    groups,
+                    visible,
+                    collapsed,
+                    currentId,
+                    pinned,
+                    stateOf,
+                    onToggle,
+                    onOpen,
+                    onPinToggle: pinToggle,
+                    onArchive: archiveRow,
+                    onMenu: openRowMenu,
+                    onGroupMenu: openGroupMenu,
+                    onGroupActions: openGroupActions,
+                    onNewSession: createWorkspaceSession,
+                    drag,
+                    t,
+                  }),
+                ),
         ),
-        h(
-          'div',
-          { className: 'dsf-tree-search' },
-          h(SearchIcon, {}),
-          h('input', {
-            value: filter,
-            placeholder: t('tree.filter'),
-            'aria-label': t('tree.filter'),
-            onChange: (event) => setFilter(event.target.value),
-          }),
-        ),
-        noMatches
-          ? h('div', { className: 'dsf-tree-empty' }, t('tree.noMatches'))
-          : groups.length === 0
-            ? h('div', { className: 'dsf-tree-empty' }, t('tree.noSessions'))
-            : h(
-                'div',
-                { className: 'dsf-tree-scroll', role: 'tree', 'aria-label': t('tree.title') },
-                h(TreeGroups, {
-                  groups,
-                  visible,
-                  collapsed,
-                  currentId,
-                  pinned,
-                  stateOf,
-                  onToggle,
-                  onOpen,
-                  onPinToggle: pinToggle,
-                  onArchive: archiveRow,
-                  onMenu: openRowMenu,
-                  onGroupMenu: openGroupMenu,
-                  onGroupActions: openGroupActions,
-                  onNewSession: createWorkspaceSession,
-                  drag,
-                  t,
-                }),
-              ),
       )
     }
 

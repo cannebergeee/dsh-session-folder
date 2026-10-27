@@ -14,8 +14,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.6, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.6>
+> Latest release (v1.9.7, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.7>
 
 ---
 
@@ -85,17 +85,15 @@ only when those props are unavailable does the plugin fall back to a label that 
 
 ### 5. Fork-tree view: Sessions by fork lineage
 
-The **⑂ icon at the right of the sidebar's “Workspaces” header row**, **clicking the “Workspaces” label itself**,
-or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers the sidebar's workspace browser:
+Both views keep the host's **three native “Workspaces” header icons** (search, sort/view options, add workspace);
+clicking the **“Workspaces” label**, or **“Fork tree view”** in a Session's `…` menu, toggles/opens the tree:
 
-- **Entry**: a 28px **⑂ icon** in the sidebar's “Workspaces” header row (no host layout space), positioned from
-  the measured host icon cluster — 8px to its left and vertically centered — and **hidden while the host search
-  box is expanded**. The “Workspaces” label itself is also a click target (plan A: a roomier pill with 3px × 9px
-  padding and an 8px radius; a transparent plugin overlay, with no host DOM change). While the tree is open,
-  clicking the panel title or the folder icon switches back to the list.
-- **Title style**: the panel title reuses the host “Workspaces” `sectionLabel` style (14px / 400 /
-  `--dsw-alias-label-tertiary`, line-height 20px) with no extra hint copy; the top-right control uses the host's
-  exact **16px / 1px-stroke closed-folder artwork** (closes back to the list).
+- **Entry / toggle**: no plugin header icon is rendered. Clicking the “Workspaces” label opens or closes the tree
+  (plan A hover pill: 3px × 9px padding, 8px radius; a transparent plugin overlay, with no host DOM change).
+  While the host search box is expanded the tree hides and restores when search closes. The Session `…` menu still
+  opens the tree; `Esc` closes it.
+- **Native header**: the tree panel starts **below** the native header, so the search / sort / add-workspace icons
+  stay visible and usable in both views. The plugin's ⑂ launcher and panel folder-close button are gone.
 - **Row actions**: hovering a row shows the host-style `…` / archive / pin buttons. The `…` menu follows the
   host Session menu order: pin, rename (with the host shortcut hint), fork, archive, open in File Explorer,
   fork-tree view, copy Session ID. Rename opens a compact plugin dialog and calls the same Host `session.rename`
@@ -122,7 +120,7 @@ or **“Fork tree view”** in a Session's `…` menu, opens a tree that covers 
 - **Filter**: the header input filters by title and keeps the matching node's ancestors visible.
 - **Open**: clicking any node opens that Session in the main column through `ctx.uiWorkspace.openSession`;
   the tree stays open for continuous browsing.
-- **Close / toggle**: click the panel title, the header **folder icon**, `Esc`, or the ⑂ icon in the Workspaces header again — the host list returns.
+- **Close / toggle**: click the “Workspaces” label again or press `Esc` — the host list returns. The Session `…` menu's “Fork tree view” row still opens the tree.
 
 > This is a **separate tree view**, not a restyle of host rows: host Session rows expose no row-content,
 > ordering, or collapse seat, so the default list stays sorted by “Last updated”. The view only replaces the
@@ -196,12 +194,11 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 - **Fork tree**: data comes from the root-scope `useSessions` / `useWorkspaces` / `useSessionStatus` standard
   props (`SessionListState.byId[id].parentId`, the workspace snapshot's `items` / `archivedSessionIds`, and the
   live status map); the plugin assembles the parent/child forest itself. The panel is a `shell.overlay` entry
-  positioned with `position: fixed` over `[data-slot="sidebar.workspaces"]`; the closed-state entry point is a
-  26px icon button the same overlay paints over the host's “Workspaces” header row (the host exposes no header
-  slot). Its position is measured from the host icon cluster's left edge and placed 8px to its left, so it never
-  overlaps the search/sort/add buttons; both states follow the sidebar through `ResizeObserver`. It styles only
-  with `--dsw-*` tokens; opening a Session reuses the host's `ctx.uiWorkspace.openSession` (the same call the
-  official chat package makes) instead of navigating itself.
+  positioned with `position: fixed` **below the native “Workspaces” header** (the top edge is measured from the
+  header's next sibling), so the native search / sort / add icons stay visible in both views. Switching is a
+  transparent hit target over the “Workspaces” label (plan A pill); the host DOM is untouched. Both states follow
+  the sidebar through `ResizeObserver`. It styles only with `--dsw-*` tokens; opening a Session reuses the host's
+  `ctx.uiWorkspace.openSession` (the same call the official chat package makes) instead of navigating itself.
 
 ---
 
@@ -220,12 +217,12 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 - **The file chip's path source is a host implementation detail**: if a future DSH release stops putting the
   path in `title`, the file right-click goes silent. The Session right-click and the `…` menu row are unaffected.
 - A blank “New session” row has no action seat, so right-clicking it does nothing.
-- **The fork tree is a separate view**: it covers the sidebar's workspace browser while open (host search and
-  grouping are temporarily hidden) and restores it on close; it does not turn host rows into a collapsible
-  tree. It shows ordinary Sessions only (subagent, blank, and archived rows are omitted), sorted by `updatedAt`,
-  without pin/archive badges. The closed-state entry is an overlay icon painted over the host's “Workspaces”
-  header row (the host offers no header slot), so a host layout change may require re-checking its position; the
-  open state is not persisted (closed after a restart), while the collapse state is.
+- **The fork tree is a separate body view**: it covers the browser area **below** the native “Workspaces” header,
+  so the three native header icons stay visible in both views; it does not turn host rows into a collapsible tree.
+  It shows ordinary Sessions only (subagent, blank, and archived rows are omitted), sorted by `updatedAt`, without
+  pin/archive badges. The plugin renders no header icon of its own; switching is a transparent overlay on the
+  “Workspaces” label, so a host layout change may require re-checking that hit target. The open state is not
+  persisted (closed after a restart), while the collapse state is.
 
 ## Layout
 
