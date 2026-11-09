@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.9.8 — 2026-11-09
+
+- Restored the native DSH behavior for Session and Workspace rows: DSH now ships the “在文件夹显示 / Show in
+  Folder” actions itself, so the plugin no longer injects its duplicate “在资源管理器中打开” menu row or
+  overrides row right-clicks. Removed the obsolete workspace path bridge and row-menu handlers.
+- The **fork-tree view keeps** its own row/group folder actions; their label now matches the native wording
+  **“在文件夹显示” / “Show in Folder”**. The tree's workspace `…` / `＋` buttons remain.
+- No host source change.
+
 ## 1.9.7 — 2026-10-27
 
 - Removed the plugin's own two header icons: the ⑂ launcher and the tree panel's folder-close button.

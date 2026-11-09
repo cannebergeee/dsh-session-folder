@@ -32,13 +32,9 @@ window.__ModuleLoader__.load({
     const NOTICE_MS = 4500
     /** CSS-module local name the chat uses for file mention and file link chips. */
     const FILE_MENTION_CLASS = 'fileMention'
-    /** `data-row-key` prefix the workspace browser gives one Session row. */
-    const SESSION_ROW_PREFIX = 'session:'
-    /** `data-row-key` prefix the workspace browser gives one workspace row. */
-    const WORKSPACE_ROW_PREFIX = 'workspace:'
 
     const zh = {
-      'menu.open': '在资源管理器中打开',
+      'menu.open': '在文件夹显示',
       'notice.noFolder': '该会话没有可打开的项目目录',
       'notice.failed': '无法打开项目目录，请重试',
       'file.title': '文件操作',
@@ -89,7 +85,7 @@ window.__ModuleLoader__.load({
       'tree.rename.cancel': '取消',
       'tree.rename.failed': '重命名失败，请重试',
       'tree.copyId': '复制会话 ID',
-      'tree.openFolder': '在资源管理器中打开',
+      'tree.openFolder': '在文件夹显示',
       'tree.resetParent': '恢复真实 fork 层级',
       'tree.archiveConfirm.title': '会话正在运行',
       'tree.archiveConfirm.stop': '停止活动并归档',
@@ -102,7 +98,7 @@ window.__ModuleLoader__.load({
       'tree.drag.rootHint': '拖到分组标题成为一级会话',
     }
     const en = {
-      'menu.open': 'Open in File Explorer',
+      'menu.open': 'Show in Folder',
       'notice.noFolder': 'This session has no project folder to open',
       'notice.failed': 'Could not open the project folder. Please try again.',
       'file.title': 'File actions',
@@ -153,7 +149,7 @@ window.__ModuleLoader__.load({
       'tree.rename.cancel': 'Cancel',
       'tree.rename.failed': 'Rename failed. Please try again.',
       'tree.copyId': 'Copy session ID',
-      'tree.openFolder': 'Open in File Explorer',
+      'tree.openFolder': 'Show in Folder',
       'tree.resetParent': 'Restore real fork lineage',
       'tree.archiveConfirm.title': 'This session is running',
       'tree.archiveConfirm.stop': 'Stop activity and archive',
@@ -306,8 +302,6 @@ window.__ModuleLoader__.load({
 
     /** Right-click menu request: `{ x, y, title, rows() }`. */
     const menuStore = createStore(null)
-    /** Workspace id → directory, mirrored from the root workspace snapshot. */
-    const workspacePathStore = createStore(new Map())
     /** Transient notice: `{ seq, text, tone }`. */
     const noticeStore = createStore(null)
     /** Whether the fork-tree view covers the sidebar's workspace browser. */
@@ -455,28 +449,6 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * The Session "..." menu row: dismiss the menu, then open the folder.
-     * The button keeps the host's own tab order, like every host row.
-     * @param props.sessionId - the row's Session.
-     * @param props.useMenuOpenState - injected hook returning the menu state pair.
-     * @param props.openFolder - injected Host operation.
-     * @param props.t - bound locale translate.
-     * @returns the menu row.
-     */
-    function SessionFolderMenuItem(props) {
-      const { sessionId, useMenuOpenState, openFolder, t } = props
-      const setMenuOpen = useMenuOpenState()[1]
-      return h(MenuItem, {
-        label: t('menu.open'),
-        icon: h(FolderIcon, {}),
-        onSelect: () => {
-          setMenuOpen(false)
-          openFolder(sessionId)
-        },
-      })
-    }
-
-    /**
      * The right-click menu surface: the request supplies its own rows, so the
      * file menu, the folder menu, and the link menu share one surface.
      * @returns the positioned menu, or null while closed.
@@ -607,38 +579,6 @@ window.__ModuleLoader__.load({
         h('span', { key: 'dot', className: 'dsf-notice-dot', 'aria-hidden': true }),
         h('span', { key: 'text' }, notice.text),
       )
-    }
-
-    /**
-     * Publishes the workspace catalog (id → directory) for the page-level
-     * context-menu listener. `shell.overlay` entries receive the root
-     * `useWorkspaces` selector hook and stay mounted, so the map follows
-     * renames, creations, and deletions without the listener reading the DOM.
-     * @param props.useWorkspaces - root workspace snapshot selector.
-     * @returns nothing; this entry renders no UI.
-     */
-    function WorkspacePathBridge(props) {
-      if (typeof props.useWorkspaces !== 'function') return null
-      return h(WorkspacePathProbe, { useWorkspaces: props.useWorkspaces })
-    }
-
-    /**
-     * Subscribes the workspace snapshot and mirrors it into the module store.
-     * @param props.useWorkspaces - root workspace snapshot selector.
-     * @returns null.
-     */
-    function WorkspacePathProbe(props) {
-      const items = props.useWorkspaces((state) => state.items)
-      React.useEffect(() => {
-        const map = new Map()
-        for (const item of items || []) {
-          const id = item === null || item === undefined ? undefined : item.workspaceId
-          const path = item === null || item === undefined ? undefined : item.path
-          if (typeof id === 'string' && typeof path === 'string' && path !== '') map.set(id, path)
-        }
-        workspacePathStore.set(map)
-      }, [items])
-      return null
     }
 
     /* ------------------------------------------------------------------ *
@@ -2433,64 +2373,15 @@ window.__ModuleLoader__.load({
         return true
       }
 
-      /**
-       * Open the plugin's workspace menu on right-click. The workspace row's
-       * own "..." menu has no extension slot, so this plugin offers its one
-       * workspace action (open the folder) on the row itself; rename and delete
-       * stay on "...".
-       * @param target - event target.
-       * @param event - the contextmenu event.
-       * @returns whether this handler consumed the event.
-       */
-      const openWorkspaceMenuAt = (target, event) => {
-        const row = target.closest('[data-row-key]')
-        if (!(row instanceof HTMLElement)) return false
-        const key = row.getAttribute('data-row-key')
-        if (typeof key !== 'string' || !key.startsWith(WORKSPACE_ROW_PREFIX)) return false
-        const workspaceId = key.slice(WORKSPACE_ROW_PREFIX.length)
-        if (workspaceId === '') return false
-        const path = workspacePathStore.get().get(workspaceId)
-        if (typeof path !== 'string' || path === '') return false
-        event.preventDefault()
-        showFolderMenu(path, event.clientX, event.clientY, t('workspace.title'))
-        return true
-      }
-
-      /**
-       * Open one Session row's own "..." menu on right-click. The menu belongs
-       * to the workspace browser; activating its trigger button is exactly what
-       * a left click on "..." does, so every row it carries — including this
-       * plugin's folder row — behaves the same.
-       * @param target - event target.
-       * @param event - the contextmenu event.
-       */
-      const openSessionMenuAt = (target, event) => {
-        const row = target.closest('[data-row-key]')
-        if (!(row instanceof HTMLElement)) return
-        const key = row.getAttribute('data-row-key')
-        if (typeof key !== 'string' || !key.startsWith(SESSION_ROW_PREFIX)) return
-        if (key.length <= SESSION_ROW_PREFIX.length) return
-        const actions = row.querySelector('[class*="rowActions"]')
-        if (!(actions instanceof HTMLElement)) return
-        // The menu trigger is the first button of the row's action seat; the
-        // row-action slot buttons follow it.
-        const trigger = actions.querySelector('button')
-        if (!(trigger instanceof HTMLButtonElement)) return
-        event.preventDefault()
-        trigger.click()
-      }
-
       // Page-level right-click: a conversation file name opens the file menu,
-      // an http(s) link opens the link menu, and a Session row opens that row's
-      // own menu at the row.
+      // an http(s) link opens the link menu. Workspace/Session rows keep the
+      // native DSH behavior now that the official views expose those actions.
       ctx.effect(() => {
         const onContextMenu = (event) => {
           const target = event.target
           if (!(target instanceof Element)) return
           if (openFileMenuAt(target, event)) return
-          if (openLinkMenuAt(target, event)) return
-          if (openWorkspaceMenuAt(target, event)) return
-          openSessionMenuAt(target, event)
+          openLinkMenuAt(target, event)
         }
         document.addEventListener('contextmenu', onContextMenu, true)
         return () => {
@@ -2498,23 +2389,6 @@ window.__ModuleLoader__.load({
           menuStore.set(null)
         }
       }, 'dsh-session-folder: context menus')
-
-      ctx.slots.inject('sidebar.workspaces.session.menu.item', () =>
-        ctx.slots.register(
-          {
-            name: 'sidebar.workspaces.session.menu.item',
-            id: 'dsh-session-folder.open-explorer',
-            order: 440,
-            locale: NS,
-            inject: () => ({ openFolder }),
-          },
-          SessionFolderMenuItem,
-        ),
-      )
-
-      ctx.slots.inject('shell.overlay', () =>
-        ctx.slots.register({ name: 'shell.overlay', id: 'dsh-session-folder.workspace-paths', order: 19 }, WorkspacePathBridge),
-      )
 
       ctx.slots.inject('shell.overlay', () =>
         ctx.slots.register({ name: 'shell.overlay', id: 'dsh-session-folder.file-menu', order: 20 }, ContextMenu),

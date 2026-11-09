@@ -1,11 +1,10 @@
 # dsh-session-folder
 
 > Local-path shortcuts for the [DeepSeek Harness (DSH)](https://github.com/deepseek-ai) UI:
-> **right-click a Session row** to open its project folder, **right-click a file name in the conversation**
-> to open it, reveal it in the file manager, or copy its absolute / relative path,
-> **right-click an http(s) link** to open it in the default browser or copy it, and **right-click a workspace
-> row** to open that workspace's directory. There is also a **fork-tree view** that browses Sessions by fork
-> lineage in the sidebar.
+> **right-click a file name in the conversation** to open it, reveal it in the file manager, or copy its
+> absolute / relative path, and **right-click an http(s) link** to open it in the default browser or copy it.
+> There is also a **fork-tree view** that browses Sessions by fork lineage in the sidebar and keeps per-row
+> folder/status actions inside the tree.
 
 中文说明: [README.md](README.md)
 
@@ -14,22 +13,22 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.7, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.7>
+> Latest release (v1.9.8, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.8>
 
 ---
 
 ## What you get
 
-### 1. Session row → open the project folder
+### 1. Session / Workspace rows: use the native DSH UI
 
-**Right-click any Session row** (or click the row's `…` as before) → that Session's own menu opens →
-**“Open in File Explorer”**, placed after *Archive session* and before *Copy Session ID*.
+DSH now ships the Session/Workspace “Show in Folder” actions natively, so the plugin **no longer injects a
+duplicate entry into the official list or menus**:
 
-Right-click opens the **same host menu**, just through an extra trigger, so pin / rename / fork / archive /
-copy Session ID are all there — no second, drifting copy of the menu.
-
-The target is the Session summary's `cwd`, i.e. the directory of the workspace that Session belongs to.
+- Session rows: right-click and the `…` menu follow the native UI (the plugin only keeps its own “Fork tree
+  view” row);
+- Workspace rows: right-click and the `…`/`＋` buttons follow the native UI;
+- Those folder actions remain available inside the **fork-tree view** (section 4).
 
 ### 2. File name → context menu
 
@@ -61,7 +60,7 @@ The link menu shares the file menu's surface, keyboard handling, and dismissal.
 **User-message references work too**: an `@file` / `@folder` reference in a user bubble (the host's
 `ReferenceChip`, whose `title` keeps the raw `@path` spelling) opens the same menus — the `@` and the
 grammar's quotes are stripped and the path is resolved against the project folder; a folder reference gets
-“Open in File Explorer”. Pending references in the composer are left alone (the chip must be inside a
+“Show in Folder”. Pending references in the composer are left alone (the chip must be inside a
 rendered chat node).
 
 > Note: user-message text is plain (`UserTextRun` renders `<span>{text}</span>`, no Markdown or link
@@ -74,16 +73,7 @@ from the link component's own React props** (it is built from `{ file: { path } 
 target as written in the markdown), so a link whose label differs from its path still opens the right file;
 only when those props are unavailable does the plugin fall back to a label that looks like a file name.
 
-### 4. Workspace row → open the workspace folder
-
-**Right-click a workspace row** → **Open in File Explorer**, opening the directory that workspace is registered on.
-
-> The workspace row's `…` menu has no plugin slot on the host side (only the Session menu does), so this
-> action lives on right-click; rename / delete workspace stay on `…`. The directory comes from the
-> root-scope workspace snapshot (mirrored through `useWorkspaces` into an id → directory map), so renames,
-> additions, and deletions are followed automatically.
-
-### 5. Fork-tree view: Sessions by fork lineage
+### 4. Fork-tree view: Sessions by fork lineage
 
 Both views keep the host's **three native “Workspaces” header icons** (search, sort/view options, add workspace);
 clicking the **“Workspaces” label**, or **“Fork tree view”** in a Session's `…` menu, toggles/opens the tree:
@@ -95,10 +85,10 @@ clicking the **“Workspaces” label**, or **“Fork tree view”** in a Sessio
 - **Native header**: the tree panel starts **below** the native header, so the search / sort / add-workspace icons
   stay visible and usable in both views. The plugin's ⑂ launcher and panel folder-close button are gone.
 - **Row actions**: hovering a row shows the host-style `…` / archive / pin buttons. The `…` menu follows the
-  host Session menu order: pin, rename (with the host shortcut hint), fork, archive, open in File Explorer,
+  host Session menu order: pin, rename (with the host shortcut hint), fork, archive, **Show in Folder**,
   fork-tree view, copy Session ID. Rename opens a compact plugin dialog and calls the same Host `session.rename`
   operation; right-clicking a row opens the same menu. **Right-clicking a Workspace group header** also offers
-  “Open in File Explorer” for that Workspace directory. Archiving a running Session asks to stop activity first.
+  “Show in Folder” for that Workspace directory. Archiving a running Session asks to stop activity first.
   Pinned Sessions sort first at their level.
 - **Workspace group actions**: hovering a group header shows the host Workspace row's two buttons — `…` renames or
   deletes the workspace (delete asks for confirmation and calls the Host delete operation), and `＋` starts a new
