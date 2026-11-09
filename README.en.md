@@ -13,8 +13,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.9, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.9>
+> Latest release (v1.9.10, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.10>
 
 ---
 
@@ -38,7 +38,7 @@ link that points at a file):
 | Row | Behavior |
 |---|---|
 | Open | Open the file with the OS default application |
-| File Explorer | Reveal the file in the file manager (selected) |
+| Show in Folder | Reveal the file in the file manager (selected) |
 | ─── | separator |
 | Copy absolute path | Copy the absolute path, with a success notice |
 | Copy relative path | Copy the path relative to the project folder (absolute when outside it) |

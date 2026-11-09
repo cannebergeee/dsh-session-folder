@@ -12,7 +12,7 @@ English: [README.en.md](README.en.md)
 > 已在 DeepSeek Harness 官方仓库的 **Show Your Plugins!** 讨论区发布：
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> 最新 Release（v1.9.9，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.9>
+> 最新 Release（v1.9.10，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.10>
 
 ---
 
@@ -33,7 +33,7 @@ DSH 原版现在已提供会话与工作区的「在文件夹显示」操作，�
 | 菜单行 | 行为 |
 |---|---|
 | 打开 | 用系统默认程序打开该文件 |
-| 资源管理器 | 在资源管理器中定位并选中该文件 |
+| 在文件夹显示 | 在文件管理器中定位并选中该文件 |
 | ─── | 分隔线 |
 | 复制绝对路径 | 复制文件绝对路径，顶部提示「已复制绝对路径」 |
 | 复制相对路径 | 复制相对项目目录的路径；文件不在项目内时为绝对路径 |

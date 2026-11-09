@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.10 — 2026-11-09
+
+- Renamed the file context menu's reveal row to **“在文件夹显示” / “Show in Folder”** to match the native DSH
+  wording; this applies to assistant file chips and to user-message `@file` references.
+- No source change; part of the v1.9.9 user-reference fix.
+
 ## 1.9.9 — 2026-11-09
 
 - **User-message `@file` / `@folder` references now support the right-click menu again**, including “在文件夹显示”
