@@ -12,7 +12,7 @@ English: [README.en.md](README.en.md)
 > 已在 DeepSeek Harness 官方仓库的 **Show Your Plugins!** 讨论区发布：
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> 最新 Release（v1.9.8，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.8>
+> 最新 Release（v1.9.9，含 tgz）：<https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.9>
 
 ---
 
@@ -51,7 +51,7 @@ DSH 原版现在已提供会话与工作区的「在文件夹显示」操作，�
 
 菜单行的样式、键盘与关闭行为与文件菜单完全一致。
 
-**用户消息里的引用也支持**：消息气泡中的 `@文件` / `@文件夹` 引用（宿主的 `ReferenceChip`，`title` 保留原始拼写 `@path`）同样能右键——去掉 `@` 与引号后按项目目录补全；文件夹引用给的是「在文件夹显示」。输入框里尚未发送的引用不处理（限定在已渲染的对话节点内）。
+**用户消息里的引用也支持**：消息气泡中的 `@文件` / `@文件夹` chip 同样能右键——识别不再依赖助手的 `fileMention` class，而是直接读引用 chip 的 `data-ref-chip`（必要时回退到以 `@` 开头的 `title`），`button` 或 `span` 形态都可；去掉 `@` / 引号后按项目目录补全，文件夹引用给的是「在文件夹显示」。输入框里尚未发送的引用不处理。
 
 > 注意：用户消息的正文是纯文本渲染（宿主 `UserTextRun` = `<span>{text}</span>`，不做 Markdown/链接解析），所以用户手打的网址目前没有可右键的链接元素；助手消息里的 Markdown 链接才走「网址右键」。
 

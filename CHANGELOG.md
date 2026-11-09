@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.9.9 — 2026-11-09
+
+- **User-message `@file` / `@folder` references now support the right-click menu again**, including “在文件夹显示”
+  for folders and the file menu for files. Detection no longer depends on the assistant `fileMention` class: the
+  plugin reads the reference chip itself (`data-ref-chip`, or a `title` beginning with `@` as a fallback), and
+  accepts either a `button` or a `span`-based chip.
+- The tree view already keeps the same folder action under the new native wording; no host source change.
+
 ## 1.9.8 — 2026-11-09
 
 - Restored the native DSH behavior for Session and Workspace rows: DSH now ships the “在文件夹显示 / Show in

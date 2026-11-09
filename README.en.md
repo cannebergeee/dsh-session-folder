@@ -13,8 +13,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.8, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.8>
+> Latest release (v1.9.9, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.9>
 
 ---
 
@@ -57,11 +57,11 @@ closes it; the menu clamps itself into the viewport.
 
 The link menu shares the file menu's surface, keyboard handling, and dismissal.
 
-**User-message references work too**: an `@file` / `@folder` reference in a user bubble (the host's
-`ReferenceChip`, whose `title` keeps the raw `@path` spelling) opens the same menus — the `@` and the
-grammar's quotes are stripped and the path is resolved against the project folder; a folder reference gets
-“Show in Folder”. Pending references in the composer are left alone (the chip must be inside a
-rendered chat node).
+**User-message references work too**: `@file` / `@folder` chips in a user bubble support the same right-click
+menus — detection reads the chip itself (`data-ref-chip`, falling back to a `title` beginning with `@`) instead
+of depending on the assistant `fileMention` class, and accepts either a `button` or a `span` chip. The raw value
+is resolved against the project folder; a folder chip opens “Show in Folder”. Pending composer references are
+left alone.
 
 > Note: user-message text is plain (`UserTextRun` renders `<span>{text}</span>`, no Markdown or link
 > parsing), so a URL typed by the user is not an anchor and has no link menu today. Only Markdown links in

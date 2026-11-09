@@ -2295,38 +2295,57 @@ window.__ModuleLoader__.load({
        * @returns whether this handler consumed the event.
        */
       const openFileMenuAt = (target, event) => {
+        const referenceElement = target.closest('[data-ref-chip]')
         const button = target.closest('button')
-        if (!(button instanceof HTMLButtonElement)) return false
-        const className = typeof button.className === 'string' ? button.className : ''
-        if (!className.includes(FILE_MENTION_CLASS)) return false
-        const rawTitle = button.getAttribute('title')
-        const referenceKind = button.getAttribute('data-ref-chip')
+        const titledReference = target.closest('[title^="@"]')
+        const element = referenceElement !== null ? referenceElement : (button !== null ? button : titledReference)
+        if (!(element instanceof HTMLElement)) return false
+        const className = typeof element.className === 'string' ? element.className : ''
+        let referenceKind = element.getAttribute('data-ref-chip')
+        const rawTitle = element.getAttribute('title')
+        if (referenceKind === null && !(element instanceof HTMLButtonElement && className.includes(FILE_MENTION_CLASS))) {
+          // Last-resort shape for a user-message reference chip whose host
+          // attribute changed: its title still carries the raw `@path` value.
+          if (typeof rawTitle === 'string' && rawTitle.trim().startsWith('@')) {
+            referenceKind = /[\\/]\s*$/.test(rawTitle.trim()) ? 'folder' : 'file'
+          }
+        }
         let value = ''
         let folder = false
         if (referenceKind === null) {
+          if (!(element instanceof HTMLButtonElement)) return false
+          if (!className.includes(FILE_MENTION_CLASS)) return false
           if (typeof rawTitle === 'string' && rawTitle.trim() !== '') {
             value = rawTitle.trim()
           } else {
             // An image link drops `title` once the chat can preview it, so the
             // path is read from the link component's props; only when that is
             // unavailable fall back to a label that happens to name a file.
-            const fromProps = pathFromReactProps(button)
+            const fromProps = pathFromReactProps(element)
             if (typeof fromProps === 'string' && fromProps !== '') {
               value = fromProps
             } else {
-              value = (button.textContent === null ? '' : button.textContent).trim()
+              value = (element.textContent === null ? '' : element.textContent).trim()
               if (!looksLikeFilePath(value)) return false
             }
           }
           if (value === '' || value.startsWith('@')) return false
         } else {
-          if (typeof rawTitle !== 'string') return false
-          // Only file and folder references name a path; session, skill, and
-          // command chips carry a label instead. They also belong to the chat
-          // itself, so the composer's pending references stay untouched.
+          // User-message `@file` / `@folder` references. The current host may
+          // render them as a button or a span, so read the chip itself rather
+          // than requiring the assistant file-mention class.
           if (referenceKind !== 'file' && referenceKind !== 'folder') return false
-          if (button.closest('[data-chat-node-key]') === null) return false
-          value = stripReference(rawTitle, referenceKind === 'folder')
+          let raw = typeof rawTitle === 'string' ? rawTitle : ''
+          if (raw.trim() === '') {
+            const fromProps = pathFromReactProps(element)
+            if (typeof fromProps === 'string') raw = fromProps
+          }
+          if (raw.trim() === '') {
+            const text = element.textContent === null ? '' : element.textContent.trim()
+            if (text.startsWith('@')) raw = text
+          }
+          if (raw === '') return false
+          value = stripReference(raw, referenceKind === 'folder')
           if (value === '') return false
           folder = referenceKind === 'folder'
         }
