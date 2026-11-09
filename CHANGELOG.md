@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.9.12 — 2026-11-09
+
+- Folder context menus (user-message `@folder` references, chat folder references, and tree Workspace group
+  headers) now include **复制绝对路径 / 复制相对路径** after “在文件夹显示”, matching the file menu. Relative
+  paths resolve against the current Session's workspace directory; the workspace root itself copies `.`.
+
 ## 1.9.11 — 2026-11-09
 
 - User-message `@file` / `@folder` chips now get the same hover affordance as native file mentions:

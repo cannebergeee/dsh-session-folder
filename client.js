@@ -2285,6 +2285,25 @@ window.__ModuleLoader__.load({
                 void openOnHost({ path })
               },
             },
+            { key: 'sep', separator: true },
+            {
+              key: 'abs',
+              label: t('file.copyAbsolute'),
+              icon: h(CopyIcon, {}),
+              onSelect: () => {
+                void copyText(path, t('notice.copiedAbsolute'))
+              },
+            },
+            {
+              key: 'rel',
+              label: t('file.copyRelative'),
+              icon: h(CopyIcon, {}),
+              onSelect: () => {
+                const cwd = currentCwd()
+                const relative = cwd === undefined ? path : relativeTo(path, cwd)
+                void copyText(relative === '' ? '.' : relative, t('notice.copiedRelative'))
+              },
+            },
           ],
         })
       }
