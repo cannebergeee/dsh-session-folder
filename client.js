@@ -180,6 +180,12 @@ window.__ModuleLoader__.load({
       '.dsf-menuitem.is-danger,.dsf-menuitem.is-danger .dsf-menuitem-icon{color:var(--dsw-alias-state-error-primary)}',
       '.dsf-menu{position:fixed;z-index:1100;box-sizing:border-box;min-width:144px;max-width:360px;padding:4px;display:flex;flex-direction:column;gap:0;border:0;border-radius:var(--dsw-radius-lg);background:var(--dsw-menu-surface-fill);backdrop-filter:var(--dsw-menu-backdrop-filter);--dsw-elevation-stroke-color:var(--dsw-alias-border-l1);box-shadow:var(--dsw-elevation-prominent);pointer-events:auto;font-family:inherit;outline:none}',
       '.dsf-menu-sep{height:.5px;margin:3px 2px;background:var(--dsw-alias-border-l2)}',
+      /* User-message @file / @folder chips: the same hover affordance as the
+         host's file mentions (dotted underline + pointer), without touching DOM. */
+      '[data-ref-chip]{cursor:pointer}',
+      '[data-ref-chip]:hover{text-decoration:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:3px}',
+      '[data-chat-node-key] [title^="@"]{cursor:pointer}',
+      '[data-chat-node-key] [title^="@"]:hover,[data-slot="conversation.chat.flow"] [title^="@"]:hover{text-decoration:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:3px}',
       '.dsf-dialog-backdrop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;background:rgba(15,20,30,.28);backdrop-filter:blur(1.5px);pointer-events:auto}',
       '.dsf-dialog{width:min(420px,calc(100vw - 40px));display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-lg);background:var(--dsw-menu-surface-fill);color:var(--dsw-alias-label-primary);box-shadow:var(--dsw-elevation-prominent);font-family:inherit}',
       '.dsf-dialog-title{font-size:14px;font-weight:600;line-height:20px}',

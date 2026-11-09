@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.11 — 2026-11-09
+
+- User-message `@file` / `@folder` chips now get the same hover affordance as native file mentions:
+  `cursor: pointer` plus a dotted underline on hover. The style is CSS-only and does not modify the host DOM.
+
 ## 1.9.10 — 2026-11-09
 
 - Renamed the file context menu's reveal row to **“在文件夹显示” / “Show in Folder”** to match the native DSH

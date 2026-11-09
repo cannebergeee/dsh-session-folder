@@ -13,8 +13,8 @@
 > Announced in the DeepSeek Harness **Show Your Plugins!** discussion:
 > <https://github.com/deepseek-ai/deepseek-harness/discussions/10617>
 >
-> Latest release (v1.9.10, with a packed tgz):
-> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.10>
+> Latest release (v1.9.11, with a packed tgz):
+> <https://github.com/cannebergeee/dsh-session-folder/releases/tag/v1.9.11>
 
 ---
 
@@ -59,9 +59,9 @@ The link menu shares the file menu's surface, keyboard handling, and dismissal.
 
 **User-message references work too**: `@file` / `@folder` chips in a user bubble support the same right-click
 menus — detection reads the chip itself (`data-ref-chip`, falling back to a `title` beginning with `@`) instead
-of depending on the assistant `fileMention` class, and accepts either a `button` or a `span` chip. The raw value
-is resolved against the project folder; a folder chip opens “Show in Folder”. Pending composer references are
-left alone.
+of depending on the assistant `fileMention` class, and accepts either a `button` or a `span` chip. On hover they
+show the same **dotted underline** and **pointer** cursor as native file mentions. The raw value is resolved against
+the project folder; a folder chip opens “Show in Folder”. Pending composer references are left alone.
 
 > Note: user-message text is plain (`UserTextRun` renders `<span>{text}</span>`, no Markdown or link
 > parsing), so a URL typed by the user is not an anchor and has no link menu today. Only Markdown links in
