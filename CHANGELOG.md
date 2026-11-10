@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.9.13 — 2026-11-10
+
+- **The fork-tree rename dialog now reproduces the shipped DSH rename modal** instead of the plugin's compact
+  input box: 380px card with the 28px panel radius, “重命名会话 / Rename session” title with a top-right close
+  button, one 44px rename input (auto-focused with the whole title selected), and footer **取消 / 重命名**
+  (outline / primary) actions — the same DOM shape, metrics, and theme tokens as `ui-primitives` `Modal` +
+  `renameInput` + `Button`.
+- Behavior matches the native dialog: Enter confirms, Escape, the close button, or the mask cancels, the primary
+  action is disabled until the name is non-empty, focus is trapped in the dialog and restored on exit, and a
+  failed rename shows the error under the input. Workspace rename uses the same modal with “重命名工作区”.
+- The session name seeds from the raw Session title (not the display fallback), so an untitled Session starts
+  with an empty draft like the host.
+- No host source change; the dialog is still the plugin's own `shell.overlay` entry and calls the public
+  `session.rename` / `workspaces.rename` operations.
+
 ## 1.9.12 — 2026-11-09
 
 - Folder context menus (user-message `@folder` references, chat folder references, and tree Workspace group

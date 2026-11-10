@@ -86,8 +86,10 @@ clicking the **“Workspaces” label**, or **“Fork tree view”** in a Sessio
   stay visible and usable in both views. The plugin's ⑂ launcher and panel folder-close button are gone.
 - **Row actions**: hovering a row shows the host-style `…` / archive / pin buttons. The `…` menu follows the
   host Session menu order: pin, rename (with the host shortcut hint), fork, archive, **Show in Folder**,
-  fork-tree view, copy Session ID. Rename opens a compact plugin dialog and calls the same Host `session.rename`
-  operation; right-clicking a row opens the same menu. **Right-clicking a Workspace group header** also offers
+  fork-tree view, copy Session ID. Rename opens the host-style modal — 380px card with a 28px panel radius,
+  “Rename session” title with a top-right close, a 44px input with the title selected, and Cancel / Rename
+  actions; Enter confirms, Escape or the mask closes, and it calls the same Host `session.rename` operation.
+  Right-clicking a row opens the same menu. **Right-clicking a Workspace group header** also offers
   “Show in Folder” for that Workspace directory. Archiving a running Session asks to stop activity first.
   Pinned Sessions sort first at their level.
 - **Workspace group actions**: hovering a group header shows the host Workspace row's two buttons — `…` renames or

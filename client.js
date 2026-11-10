@@ -80,9 +80,10 @@ window.__ModuleLoader__.load({
       'tree.notice.workspaceDeleted': '工作区已删除',
       'tree.notice.workspaceRenameFailed': '重命名工作区失败',
       'tree.rename.placeholder': '会话名称',
-      'tree.rename.empty': '名称不能为空',
-      'tree.rename.save': '保存',
+      'tree.rename.workspaceName': '工作区名称',
+      'tree.rename.save': '重命名',
       'tree.rename.cancel': '取消',
+      'tree.dialog.close': '关闭',
       'tree.rename.failed': '重命名失败，请重试',
       'tree.copyId': '复制会话 ID',
       'tree.openFolder': '在文件夹显示',
@@ -144,9 +145,10 @@ window.__ModuleLoader__.load({
       'tree.notice.workspaceDeleted': 'Workspace deleted',
       'tree.notice.workspaceRenameFailed': 'Could not rename the workspace',
       'tree.rename.placeholder': 'Session name',
-      'tree.rename.empty': 'The name cannot be empty',
-      'tree.rename.save': 'Save',
+      'tree.rename.workspaceName': 'Workspace name',
+      'tree.rename.save': 'Rename',
       'tree.rename.cancel': 'Cancel',
+      'tree.dialog.close': 'Close',
       'tree.rename.failed': 'Rename failed. Please try again.',
       'tree.copyId': 'Copy session ID',
       'tree.openFolder': 'Show in Folder',
@@ -186,17 +188,34 @@ window.__ModuleLoader__.load({
       '[data-ref-chip]:hover{text-decoration:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:3px}',
       '[data-chat-node-key] [title^="@"]{cursor:pointer}',
       '[data-chat-node-key] [title^="@"]:hover,[data-slot="conversation.chat.flow"] [title^="@"]:hover{text-decoration:underline;text-decoration-style:dotted;text-decoration-thickness:1px;text-underline-offset:3px}',
-      '.dsf-dialog-backdrop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;background:rgba(15,20,30,.28);backdrop-filter:blur(1.5px);pointer-events:auto}',
-      '.dsf-dialog{width:min(420px,calc(100vw - 40px));display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-lg);background:var(--dsw-menu-surface-fill);color:var(--dsw-alias-label-primary);box-shadow:var(--dsw-elevation-prominent);font-family:inherit}',
-      '.dsf-dialog-title{font-size:14px;font-weight:600;line-height:20px}',
-      '.dsf-dialog-input{box-sizing:border-box;width:100%;height:34px;padding:0 10px;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);outline:none;font:inherit;font-size:13px}',
-      '.dsf-dialog-input:focus{border-color:var(--dsw-alias-brand-primary)}',
-      '.dsf-dialog-error{color:var(--dsw-alias-state-error-primary);font-size:12px;line-height:18px}',
-      '.dsf-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:2px}',
-      '.dsf-dialog-button{height:30px;padding:0 12px;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-primary);font:inherit;font-size:12.5px;cursor:pointer}',
-      '.dsf-dialog-button:hover{background:var(--dsw-alias-interactive-bg-hover)}',
-      '.dsf-dialog-button.is-primary{border-color:var(--dsw-alias-brand-primary);background:var(--dsw-alias-brand-primary);color:var(--dsw-alias-label-inverse,#fff);font-weight:600}',
-      '.dsf-dialog-button:disabled{opacity:.5;cursor:default}',
+      /* Rename dialog: the host Modal (`_14mp3_`), rename input (`_renameInput`),
+         and Button (`_1ulci_`) geometry copied verbatim — 380px card, 28px panel
+         radius, 44px input, 36px actions — so the tree dialog is indistinguishable
+         from the shipped one. Only `dsf-` prefixes differ. */
+      '.dsf-modal-root{pointer-events:auto;position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:max(24px,var(--dsh-frame-overlay-top,24px)) 24px}',
+      '.dsf-modal-mask{position:absolute;inset:var(--dsh-frame-chrome-top,0px) 0 0;backdrop-filter:var(--dsw-mask-blur)}',
+      '.dsf-modal-mask::after{content:"";position:absolute;inset:0;background:var(--dsw-alias-bg-mask-1);animation:dsf-modal-enter var(--ds-transition-duration) var(--ds-ease-in-out)}',
+      '.dsf-modal{box-sizing:border-box;position:relative;z-index:1;display:flex;flex-direction:column;gap:20px;width:min(380px,100%);padding:0 0 24px;overflow:hidden;border:0;border-radius:var(--dsw-radius-panel);background:var(--dsw-alias-bg-layer-2);box-shadow:var(--dsw-elevation-prominent);animation:dsf-modal-enter var(--ds-transition-duration) var(--ds-ease-in-out);color:var(--dsw-alias-label-primary);font-family:inherit;outline:none}',
+      '@keyframes dsf-modal-enter{0%{opacity:0}to{opacity:1}}',
+      '@media (prefers-reduced-motion:reduce){.dsf-modal-mask::after,.dsf-modal{animation:none}}',
+      '.dsf-modal-content{display:flex;flex-direction:column;width:100%}',
+      '.dsf-modal-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:22px 14px 12px 24px}',
+      '.dsf-modal-title{margin:0;font-size:16px;line-height:24px;font-weight:500;color:var(--dsw-alias-label-primary)}',
+      '.dsf-modal-close{flex:none;display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;border-radius:var(--dsw-radius-sm);background:transparent;cursor:pointer;color:var(--dsw-alias-label-secondary)}',
+      '.dsf-modal-close:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-modal-close:disabled{cursor:default;opacity:.4}',
+      '.dsf-modal-body{display:flex;flex-direction:column;min-width:0;margin-top:20px;padding:0 24px}',
+      '.dsf-modal-input{box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-lg);width:100%;height:44px;color:var(--dsw-alias-label-primary);background:0 0;outline:none;padding:7px 14px;font-size:14px;font-weight:400;line-height:22px;font-family:inherit}',
+      '.dsf-modal-input:disabled{color:var(--dsw-alias-label-dimmed)}',
+      '.dsf-modal-error{color:var(--dsw-alias-state-error-primary);margin-top:8px;font-size:12px;line-height:18px}',
+      '.dsf-modal-footer{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:0 24px}',
+      '.dsf-modal-action{box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;height:36px;border:none;border-radius:var(--dsw-radius-md);cursor:pointer;padding:0 14px;background:transparent;color:var(--dsw-alias-label-primary);font-family:inherit;font-size:14px;font-weight:400;line-height:22px}',
+      '.dsf-modal-action:disabled{cursor:not-allowed;opacity:.4}',
+      '.dsf-modal-action.is-primary{background:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-primary-foreground)}',
+      '.dsf-modal-action.is-primary:hover:not(:disabled){background:var(--dsw-alias-button-primary-hover)}',
+      '.dsf-modal-action.is-outline{border:.5px solid transparent;background:transparent;box-shadow:inset 0 0 0 var(--dsh-hairline-width,.5px) var(--dsh-button-outline-color,var(--dsw-alias-border-l3))}',
+      '.dsf-modal-action.is-outline:hover:not(:disabled){background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsf-modal-action:focus-visible{outline:var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}',
       '.dsf-notice{position:fixed;top:40px;left:50%;transform:translateX(-50%);z-index:1100;display:flex;align-items:center;gap:10px;width:max-content;max-width:min(640px,calc(100vw - 48px));padding:12px 16px;border-radius:var(--dsw-radius-lg);background:var(--dsw-alias-toast-bg);color:var(--dsw-alias-toast-label);font-family:inherit;font-size:14px;line-height:22px;box-shadow:var(--dsw-shadow-lv3);pointer-events:none;animation:dsf-notice-in .18s ease-out}',
       '.dsf-notice-dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--dsw-alias-state-error-primary)}',
       '.dsf-notice[data-tone=success] .dsf-notice-dot{background:var(--dsw-alias-state-success-primary)}',
@@ -776,6 +795,32 @@ window.__ModuleLoader__.load({
         h('path', { key: 'lid', d: 'M3 4.3h10' }),
         h('path', { key: 'handle', d: 'M6.2 4.3V2.8h3.6v1.5' }),
         h('path', { key: 'body', d: 'M4.2 4.3l.6 9.1h6.4l.6-9.1M6.7 7v4.1M9.3 7v4.1' }),
+      )
+    }
+
+    /**
+     * Close glyph for the rename dialog: the host Modal renders the 16px
+     * outline close artwork at 14px with a 1px stroke.
+     * @param props.size - square edge in pixels.
+     * @returns the icon.
+     */
+    function CloseIcon(props) {
+      const size = props !== null && props !== undefined && props.size !== undefined ? props.size : 14
+      return h(
+        'svg',
+        {
+          viewBox: '0 0 16 16',
+          width: size,
+          height: size,
+          fill: 'none',
+          stroke: 'currentColor',
+          strokeWidth: 1,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          'aria-hidden': true,
+          focusable: 'false',
+        },
+        h('path', { d: 'M4 4l8 8M12 4l-8 8' }),
       )
     }
 
@@ -1795,7 +1840,7 @@ window.__ModuleLoader__.load({
             label: t('tree.rename'),
             icon: h(EditIcon, {}),
             shortcut: mod + '+Alt+G',
-            onSelect: () => treeRenameStore.set({ kind: 'session', id: row.id, title: treeTitle(row, t) }),
+            onSelect: () => treeRenameStore.set({ kind: 'session', id: row.id, title: typeof row.title === 'string' ? row.title : '' }),
           },
           {
             key: 'fork',
@@ -1941,8 +1986,10 @@ window.__ModuleLoader__.load({
 
     /**
      * Rename dialog shared by a tree Session row and a Workspace group header.
-     * The request carries `{ kind, id, title }`; the menu closes before this
-     * surface opens.
+     * Mirrors the host `Modal` + rename-form structure and behavior: 380px card,
+     * title-left close-right header, one 44px input, outline/primary footer
+     * actions, Enter confirms, Escape and the mask close, focus is trapped and
+     * returned to the row on exit.
      * @param props.renameSession - injected Host Session rename operation.
      * @param props.renameWorkspace - injected Host Workspace rename operation.
      * @param props.t - bound locale translate.
@@ -1950,88 +1997,197 @@ window.__ModuleLoader__.load({
      */
     function SessionRenameDialog(props) {
       const request = useStore(treeRenameStore)
-      const [draft, setDraft] = React.useState('')
+      if (request === null) return null
+      return h(RenameForm, { key: request.kind + ':' + String(request.id), request, ...props })
+    }
+
+    /**
+     * One request's form: the draft seeds from the request on mount, so a new
+     * request always starts with a fresh draft, error, and in-flight state.
+     * @param props.request - `{ kind, id, title }` from the tree menu.
+     * @param props.renameSession - injected Host Session rename operation.
+     * @param props.renameWorkspace - injected Host Workspace rename operation.
+     * @param props.t - bound locale translate.
+     * @returns the modal.
+     */
+    function RenameForm(props) {
+      const request = props.request
+      const t = typeof props.t === 'function' ? props.t : (key) => key
+      const isWorkspace = request.kind === 'workspace'
+      const rename = isWorkspace ? props.renameWorkspace : props.renameSession
+      const label = t(isWorkspace ? 'tree.rename.workspaceTitle' : 'tree.rename.title')
+      const dialogRef = React.useRef(null)
+      const inputRef = React.useRef(null)
+      const composingRef = React.useRef(false)
+      const busyRef = React.useRef(false)
+      const [draft, setDraft] = React.useState(typeof request.title === 'string' ? request.title : '')
       const [busy, setBusy] = React.useState(false)
       const [error, setError] = React.useState(null)
-      const inputRef = React.useRef(null)
-      const t = typeof props.t === 'function' ? props.t : (key) => key
-      const isWorkspace = request !== null && request.kind === 'workspace'
-      const rename = isWorkspace ? props.renameWorkspace : props.renameSession
-      React.useEffect(() => {
-        if (request === null) return undefined
-        setDraft(request.title === undefined || request.title === null ? '' : request.title)
-        setError(null)
-        setBusy(false)
-        const frame = requestAnimationFrame(() => {
-          const element = inputRef.current
-          if (element === null) return
-          element.focus()
-          element.select()
-        })
-        return () => cancelAnimationFrame(frame)
-      }, [request])
-      if (request === null) return null
+      busyRef.current = busy
+      const trimmed = draft.trim()
+      const blocked = busy || trimmed === ''
       const close = () => {
-        if (!busy) treeRenameStore.set(null)
+        if (busyRef.current) return
+        treeRenameStore.set(null)
       }
-      const save = () => {
-        const title = draft.trim()
-        if (title === '') {
-          setError(t('tree.rename.empty'))
+      const confirm = () => {
+        if (blocked) return
+        if (typeof rename !== 'function') {
+          setError(t(isWorkspace ? 'tree.notice.workspaceRenameFailed' : 'tree.rename.failed'))
           return
         }
         setBusy(true)
         setError(null)
-        Promise.resolve(rename(request.id, title)).then(
+        Promise.resolve(rename(request.id, trimmed)).then(
           () => treeRenameStore.set(null),
-          () => {
+          (reason) => {
             setBusy(false)
-            setError(t(isWorkspace ? 'tree.notice.workspaceRenameFailed' : 'tree.rename.failed'))
+            const message =
+              reason instanceof Error ? reason.message : typeof reason === 'string' ? reason : ''
+            setError(
+              message === ''
+                ? t(isWorkspace ? 'tree.notice.workspaceRenameFailed' : 'tree.rename.failed')
+                : message,
+            )
           },
         )
       }
-      return h(
-        'div',
-        {
-          className: 'dsf-dialog-backdrop',
-          role: 'presentation',
-          onPointerDown: (event) => {
-            if (event.target === event.currentTarget) close()
-          },
-          onKeyDown: (event) => {
-            if (event.key !== 'Escape') return
+      React.useEffect(() => {
+        const previous = document.activeElement
+        const frame = requestAnimationFrame(() => {
+          const input = inputRef.current
+          if (input === null) return
+          input.focus()
+          input.select()
+        })
+        return () => {
+          cancelAnimationFrame(frame)
+          if (previous !== null && previous !== document.body && typeof previous.focus === 'function') {
+            try {
+              previous.focus()
+            } catch (restoreError) {
+              // Restoring focus is best-effort; the tree stays usable regardless.
+            }
+          }
+        }
+      }, [])
+      React.useEffect(() => {
+        const onKeyDown = (event) => {
+          if (event.key === 'Escape' && !event.isComposing) {
             event.preventDefault()
             event.stopPropagation()
             close()
-          },
-        },
+            return
+          }
+          if (event.key !== 'Tab') return
+          const dialog = dialogRef.current
+          if (dialog === null) return
+          const focusable = [
+            ...dialog.querySelectorAll('button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+          ]
+          if (focusable.length === 0) {
+            event.preventDefault()
+            dialog.focus()
+            return
+          }
+          const first = focusable[0]
+          const last = focusable[focusable.length - 1]
+          const active = document.activeElement
+          if (event.shiftKey) {
+            if (active === first || !dialog.contains(active)) {
+              event.preventDefault()
+              last.focus()
+            }
+          } else if (active === last || !dialog.contains(active)) {
+            event.preventDefault()
+            first.focus()
+          }
+        }
+        document.addEventListener('keydown', onKeyDown, true)
+        return () => document.removeEventListener('keydown', onKeyDown, true)
+      }, [])
+      return h(
+        'div',
+        { className: 'dsf-modal-root', role: 'presentation' },
+        h('div', {
+          className: 'dsf-modal-mask',
+          'aria-hidden': 'true',
+          onClick: close,
+        }),
         h(
           'div',
-          { className: 'dsf-dialog', role: 'dialog', 'aria-modal': 'true', 'aria-label': t(isWorkspace ? 'tree.rename.workspaceTitle' : 'tree.rename.title') },
-          h('div', { className: 'dsf-dialog-title' }, t(isWorkspace ? 'tree.rename.workspaceTitle' : 'tree.rename.title')),
-          h('input', {
-            ref: inputRef,
-            className: 'dsf-dialog-input',
-            value: draft,
-            placeholder: t('tree.rename.placeholder'),
-            'aria-label': t('tree.rename.placeholder'),
-            disabled: busy,
-            onChange: (event) => {
-              setDraft(event.target.value)
-              setError(null)
-            },
-            onKeyDown: (event) => {
-              if (event.key !== 'Enter' || event.nativeEvent.isComposing) return
-              event.preventDefault()
-              save()
-            },
-          }),
-          error === null ? null : h('div', { className: 'dsf-dialog-error', role: 'alert' }, error),
+          {
+            ref: dialogRef,
+            className: 'dsf-modal',
+            role: 'dialog',
+            'aria-modal': 'true',
+            'aria-label': label,
+            tabIndex: -1,
+          },
           h(
             'div',
-            { className: 'dsf-dialog-actions' },
-            h('button', { type: 'button', className: 'dsf-dialog-button', disabled: busy, onClick: close }, t('tree.rename.cancel')),
-            h('button', { type: 'button', className: 'dsf-dialog-button is-primary', disabled: busy, onClick: save }, t('tree.rename.save')),
+            { className: 'dsf-modal-content' },
+            h(
+              'div',
+              { className: 'dsf-modal-header' },
+              h('h2', { className: 'dsf-modal-title' }, label),
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dsf-modal-close',
+                  'aria-label': t('tree.dialog.close'),
+                  disabled: busy,
+                  onClick: close,
+                },
+                h(CloseIcon, { size: 14 }),
+              ),
+            ),
+            h(
+              'div',
+              { className: 'dsf-modal-body' },
+              h('input', {
+                ref: inputRef,
+                className: 'dsf-modal-input',
+                value: draft,
+                'aria-label': t(isWorkspace ? 'tree.rename.workspaceName' : 'tree.rename.placeholder'),
+                'data-modal-autofocus': true,
+                disabled: busy,
+                onFocus: (event) => {
+                  event.target.select()
+                },
+                onChange: (event) => {
+                  setDraft(event.target.value)
+                  setError(null)
+                },
+                onCompositionStart: () => {
+                  composingRef.current = true
+                },
+                onCompositionEnd: () => {
+                  composingRef.current = false
+                },
+                onKeyDown: (event) => {
+                  if (event.key !== 'Enter' || composingRef.current || event.nativeEvent.isComposing) return
+                  event.preventDefault()
+                  confirm()
+                },
+              }),
+              error === null ? null : h('div', { className: 'dsf-modal-error', role: 'alert' }, error),
+            ),
+          ),
+          h(
+            'div',
+            { className: 'dsf-modal-footer' },
+            h(
+              'button',
+              { type: 'button', className: 'dsf-modal-action is-outline', disabled: busy, onClick: close },
+              t('tree.rename.cancel'),
+            ),
+            h(
+              'button',
+              { type: 'button', className: 'dsf-modal-action is-primary', disabled: blocked, onClick: confirm },
+              t('tree.rename.save'),
+            ),
           ),
         ),
       )
