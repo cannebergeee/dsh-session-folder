@@ -196,7 +196,7 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
 
 ## Compatibility
 
-- DSH `0.2.1-rc` line (needs the `sidebar.workspaces.session.menu.item` / `shell.overlay` slots, the
+- DSH `0.2.1-rc` / `0.2.2-rc` line (needs the `sidebar.workspaces.session.menu.item` / `shell.overlay` slots, the
   `session.openWorkspacePath` Remote, and the `ctx.sessions` / `ctx.uiWorkspace` services).
 - Requires a deployment that can hand paths to a local desktop (DSH Desktop, or a locally run Web build);
   open actions fail with a notice otherwise.
@@ -215,6 +215,9 @@ The plugin is a thin browser half; the heavy lifting stays in the host:
   pin/archive badges. The plugin renders no header icon of its own; switching is a transparent overlay on the
   “Workspaces” label, so a host layout change may require re-checking that hit target. The open state is not
   persisted (closed after a restart), while the collapse state is.
+- **The fork-tree rename modal replicates the shipped one**: the host does not expose that Modal to plugins, so the
+  plugin reproduces the `Modal` / `renameInput` / `Button` structure, metrics, and tokens 1:1. It is not the same
+  component instance; a future DSH dialog redesign needs a matching plugin update.
 
 ## Layout
 

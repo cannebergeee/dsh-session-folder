@@ -130,7 +130,7 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-session-folder
 
 ## 兼容性
 
-- DSH `0.2.1-rc` 系列（依赖 `sidebar.workspaces.session.menu.item` / `shell.overlay` 槽位、`session.openWorkspacePath` Remote，以及 `ctx.sessions` / `ctx.uiWorkspace` 服务）。
+- DSH `0.2.1-rc` / `0.2.2-rc` 系列（依赖 `sidebar.workspaces.session.menu.item` / `shell.overlay` 槽位、`session.openWorkspacePath` Remote，以及 `ctx.sessions` / `ctx.uiWorkspace` 服务）。
 - 需要「能把路径交给本机桌面」的部署：DSH Desktop，或本机运行的 Web 版；纯远程/无桌面环境下打开类操作会失败并给出提示。
 - 不占用模型上下文：这是纯浏览器界面插件，不注册工具、不写会话。
 
@@ -140,6 +140,7 @@ dsh plugin --profile <profile> add link:/absolute/path/to/dsh-session-folder
 - **文件 chip 的路径来源是宿主实现细节**：`title` 属性若在未来 DSH 版本中改变，文件右键会静默失效；会话右键与 `…` 菜单行不受影响。
 - 空白「新会话」行没有 `rowActions`，右键不做任何事。
 - **分叉树是独立视图**：打开时覆盖标题栏下方的 workspace 浏览区（宿主列表暂时不可见），关闭后恢复；不把宿主会话行改成可折叠树。树只显示普通会话（排除 subagent、空白与归档），按 `updatedAt` 排序，不显示置顶/归档状态。树面板不修改原生标题栏，三个原生图标在两种视图下都可用；打开状态不持久（每次启动默认关闭），折叠状态持久。
+- **分叉树的重命名弹窗是按宿主原版复刻的**：宿主没有把这个 Modal 暴露给插件，因此插件按 `Modal` / `renameInput` / `Button` 的真实结构、尺寸与 token 1:1 还原；它不是同一个组件实例，DSH 未来若调整弹窗规格，需要同步更新插件。
 
 ## 目录结构
 
